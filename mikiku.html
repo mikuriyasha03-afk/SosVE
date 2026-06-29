@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOS Venezuela - Portal de Emergencia</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; line-height: 1.6; color: #222; background-color: #f4f6f8; padding-bottom: 60px; }
+        .container { max-width: 800px; margin: 0 auto; padding: 15px; }
+        
+        /* NAVBAR */
+        .navbar { display: flex; justify-content: space-between; align-items: center; background-color: #d9534f; color: white; padding: 12px 20px; border-bottom: 3px solid #b52b27; }
+        .navbar-brand { font-weight: bold; font-size: 16px; }
+        .navbar-brand span { display: block; font-weight: normal; font-size: 11px; opacity: 0.9; }
+        .btn-nav { background-color: rgba(255, 255, 255, 0.2); color: white; border: 1px solid white; padding: 6px 12px; font-size: 13px; font-weight: bold; border-radius: 4px; cursor: pointer; transition: background 0.2s; }
+        .btn-nav:hover { background-color: white; color: #d9534f; }
+
+        /* SISTEMA DE PESTAÑAS */
+        .tabs-container { display: flex; flex-wrap: wrap; background: white; margin-bottom: 20px; border-bottom: 2px solid #e3e4e6; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .tab-btn { flex: 1; min-width: 120px; padding: 14px 8px; text-align: center; font-weight: bold; font-size: 12px; background: none; border: none; cursor: pointer; color: #555; transition: all 0.2s; border-bottom: 4px solid transparent; }
+        .tab-btn.active { color: #d9534f; border-bottom: 4px solid #d9534f; background-color: #fff5f5; }
+        
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* ACCIONES DE PUBLICACIÓN */
+        .public-actions { background: white; padding: 25px; border-radius: 12px; border: 1px solid #e3e4e6; margin-bottom: 25px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+        .btn-main-action { padding: 14px 28px; font-weight: 700; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; display: inline-flex; align-items: center; gap: 8px; }
+
+        /* COLORES TEMÁTICOS */
+        .bg-critico { background-color: #d9534f; } .bg-critico:hover { background-color: #c9302c; }
+        .bg-busqueda { background-color: #f0ad4e; } .bg-busqueda:hover { background-color: #ec971f; }
+        .bg-salvo { background-color: #5cb85c; } .bg-salvo:hover { background-color: #449d44; }
+        .bg-acopio { background-color: #6f42c1; } .bg-acopio:hover { background-color: #5a32a3; }
+        .bg-prensa { background-color: #0275d8; } .bg-prensa:hover { background-color: #025aa5; }
+
+        /* FORMULARIOS */
+        .form-box { background: #ffffff; border: 1px solid #d1d5db; padding: 25px; border-radius: 14px; margin-bottom: 25px; display: none; box-shadow: 0 10px 25px rgba(0,0,0,0.08); animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .form-box h3 { margin-bottom: 18px; font-size: 18px; color: #111827; font-weight: 700; border-bottom: 1px solid #f3f4f6; padding-bottom: 10px; }
+        .input-group { margin-bottom: 16px; text-align: left; }
+        .input-group label { display: block; font-size: 13px; font-weight: 600; color: #4b5563; margin-bottom: 6px; }
+        .form-box input[type="text"], .form-box textarea, .admin-panel textarea, .admin-panel input[type="text"], .admin-panel select { width: 100%; padding: 12px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-family: inherit; font-size: 14px; color: #1f2937; background-color: #fff; outline: none; }
+        .form-box input[type="text"]:focus, .form-box textarea:focus, .admin-panel textarea:focus { border-color: #d9534f; box-shadow: 0 0 0 3px rgba(217, 83, 79, 0.15); }
+
+        /* ADJUNTAR FOTO */
+        .file-upload-wrapper { position: relative; margin-top: 5px; margin-bottom: 20px; }
+        .file-upload-label { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 16px; background-color: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 8px; cursor: pointer; color: #64748b; font-weight: 600; font-size: 14px; }
+        .file-upload-wrapper input[type="file"] { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+        .file-name-preview { font-size: 12px; color: #5cb85c; font-weight: bold; margin-top: -12px; margin-bottom: 15px; display: none; text-align: center; }
+
+        /* PANELES DE CONTROL ADMINISTRATIVO */
+        .admin-panel { background: #eef7fc; border: 1px solid #bce8f1; padding: 20px; border-radius: 12px; margin-bottom: 25px; display: none; }
+        .mod-actions { display: flex; gap: 8px; margin-top: 8px; }
+        .btn-delete-troll { background-color: #d9534f; color: white; padding: 5px 12px; font-size: 12px; font-weight: bold; border: none; border-radius: 4px; cursor: pointer; }
+        .btn-edit-owner { background-color: #f0ad4e; color: white; padding: 5px 12px; font-size: 12px; font-weight: bold; border: none; border-radius: 4px; cursor: pointer; }
+
+        /* LISTADOS Y SECCIONES */
+        .section { background: white; border: 1px solid #e3e4e6; border-radius: 12px; padding: 20px; margin-bottom: 25px; box-shadow: 0 2px 6px rgba(0,0,0,0.02); }
+        .section-title { border-bottom: 2px solid #f1f1f1; padding-bottom: 10px; font-size: 18px; margin-bottom: 15px; font-weight: 700; }
+        .item-list { list-style: none; }
+        .item-list li { padding: 18px 0; border-bottom: 1px dashed #e3e4e6; font-size: 15px; }
+        .item-list li:last-child { border-bottom: none; }
+        .report-img { display: block; max-width: 100%; max-height: 280px; border-radius: 8px; margin-top: 12px; object-fit: cover; border: 1px solid #e2e8f0; }
+
+        /* MODAL */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); backdrop-filter: blur(2px); }
+        .modal-content { background-color: white; margin: 10% auto; padding: 25px; border-radius: 14px; max-width: 400px; width: 90%; position: relative; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+        .modal-content input { width: 100%; padding: 11px; margin: 8px 0 15px 0; border: 1px solid #cbd5e1; border-radius: 6px; }
+        .close-modal { position: absolute; right: 18px; top: 12px; font-size: 24px; cursor: pointer; color: #9ca3af; }
+
+        .badge { display: inline-block; padding: 3px 6px; font-size: 11px; font-weight: bold; color: white; border-radius: 4px; text-transform: uppercase; margin-right: 6px; letter-spacing: 0.3px; }
+        .badge-danger { background-color: #d9534f; }
+        .badge-success { background-color: #5cb85c; }
+        .badge-info { background-color: #0275d8; }
+        .badge-acopio { background-color: #6f42c1; }
+        .meta-info { font-size: 13px; color: #64748b; display: block; margin-top: 6px; font-weight: 500; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="navbar-brand">🚨 SOS VENEZUELA <span>Información Civil Inmediata</span></div>
+        <div><button id="btn-login-nav" class="btn-nav" onclick="abrirModal()">Acceso Personal</button></div>
+    </nav>
+
+    <!-- SISTEMA DE PESTAÑAS -->
+    <div class="tabs-container">
+        <button id="tab-encontrados-btn" class="tab-btn active" onclick="cambiarPestana('encontrados')">🏠 PERSONAS Y MASCOTAS A SALVO</button>
+        <button id="tab-atrapados-btn" class="tab-btn" onclick="cambiarPestana('atrapados')">🚨 PERSONAS ATRAPADAS</button>
+        <button id="tab-desaparecidos-btn" class="tab-btn" onclick="cambiarPestana('desaparecidos')">🔍 DESAPARECIDOS / MASCOTAS PERDIDAS</button>
+        <button id="tab-acopio-btn" class="tab-btn" onclick="cambiarPestana('acopio')">📦 ACOPIOS</button>
+        <button id="tab-noticias-btn" class="tab-btn" onclick="cambiarPestana('noticias')">📢 NOTICIAS</button>
+    </div>
+
+    <div class="container">
+
+        <!-- PANEL OPERATIVO EXCLUSIVO (Solo Moderadores y Dueño) -->
+        <div id="panel-personal" class="admin-panel">
+            <h3 style="color: #245269; margin-bottom: 12px;">🛠️ Panel Operativo (<span id="role-badge">Cargando...</span>)</h3>
+            <p id="user-welcome" style="font-size: 12px; margin-bottom: 15px; font-weight: bold;"></p>
+            
+            <!-- GESTIÓN DE RANGOS DINÁMICOS (Solo Dueño) -->
+            <div id="bloque-gestion-roles" style="background: #fff3cd; padding: 15px; border-radius: 8px; border: 1px solid #ffeeba; margin-bottom: 15px; display: none;">
+                <h4 style="font-size:14px; margin-bottom:8px; color:#856404;">👥 Asignación de Rangos y Permisos</h4>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <input type="text" id="role-email" placeholder="Correo del colaborador (ej: nombre@correo.com)" style="padding: 8px;">
+                    <div style="display: flex; gap: 8px;">
+                        <select id="role-select" style="flex: 1; padding: 8px;">
+                            <option value="moderador">🛡️ Moderador</option>
+                            <option value="noticiero">📰 Noticiero / Periodista</option>
+                            <option value="owner">👑 Dueño / Co-Propietario</option>
+                            <option value="publico">❌ Ninguno / Quitar Rango</option>
+                        </select>
+                        <button class="btn-main-action bg-acopio" style="padding: 8px 15px; font-size:12px;" onclick="guardarRangoDinamico()">Aplicar Rango</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CARGA MASIVA (Solo Dueño) -->
+            <div id="bloque-lote-owner" style="background: white; padding: 15px; border-radius: 8px; border: 1px solid #bce8f1; margin-bottom: 15px; display: none;">
+                <h4 style="font-size:14px; margin-bottom:5px; color:#2b547e;">📋 Importar Listados Masivos en Lote (JSON)</h4>
+                <p style="font-size: 11px; color:#666; margin-bottom:8px;">Campos válidos: <code>nombre</code>, <code>detalles</code>, <code>contacto</code></p>
+                <div style="margin-bottom: 10px;">
+                    <label style="font-size: 12px; font-weight: bold; color: #444;">Destino del lote:</label>
+                    <select id="json-destino" style="margin-top: 4px; padding: 8px;">
+                        <option value="encontrados">🏠 Personas / Mascotas A Salvo</option>
+                        <option value="atrapados">🚨 Personas Atrapadas</option>
+                        <option value="desaparecidos">🔍 Desaparecidos / Mascotas Perdidas</option>
+                        <option value="acopio">📦 Centros de Acopio Activos</option>
+                    </select>
+                </div>
+                <textarea id="json-input" rows="4" placeholder='[{"nombre": "Nombre o Mascota", "detalles": "Especificaciones", "contacto": "Ubicación o Teléfono"}]' style="font-family: monospace; font-size: 12px;"></textarea>
+                <button class="btn-main-action bg-prensa" style="width:100%; margin-top:8px; padding: 10px; justify-content: center;" onclick="importarListaJSON()">Cargar Listado Masivo</button>
+            </div>
+
+            <button class="btn-main-action bg-critico" style="margin-top:5px; padding: 6px 12px; font-size:11px; width: auto;" onclick="cerrarSesion()">Cerrar Sesión</button>
+        </div>
+
+        <!-- FORMULARIO COMPARTIDO PARA REPORTES -->
+        <div id="formulario-ciudadano" class="form-box">
+            <h3 id="form-titulo">Enviar Reporte</h3>
+            <input type="hidden" id="form-categoria">
+            <input type="hidden" id="form-edit-id">
+            
+            <div class="input-group">
+                <label id="lbl-nombre" for="form-nombre">Nombre:</label>
+                <input type="text" id="form-nombre">
+            </div>
+            <div class="input-group">
+                <label id="lbl-detalles" for="form-detalles">Detalles:</label>
+                <textarea id="form-detalles" rows="3"></textarea>
+            </div>
+            <div class="input-group">
+                <label id="lbl-contacto" for="form-contacto">Contacto:</label>
+                <input type="text" id="form-contacto">
+            </div>
+            <div class="input-group" id="contenedor-foto-input">
+                <label>Fotografía de evidencia / Identificación:</label>
+                <div class="file-upload-wrapper">
+                    <div class="file-upload-label">
+                        <span>📷</span> <span id="upload-label-text">Tomar o subir foto</span>
+                    </div>
+                    <input type="file" id="form-foto" accept="image/*" onchange="mostrarNombreArchivo(this)">
+                </div>
+            </div>
+            <div id="file-name-preview" class="file-name-preview">✓ Archivo adjunto listo</div>
+
+            <button id="btn-enviar-reporte" class="btn-main-action" style="width:100%; justify-content: center;" onclick="enviarReportePublico()">Publicar Registro Ahora</button>
+            <button class="btn-main-action" style="background:#9ca3af; width:100%; margin-top:8px; justify-content: center;" onclick="cerrarFormulario()">Cancelar</button>
+        </div>
+
+        <!-- PESTAÑA: ENCONTRADOS -->
+        <div id="contenido-encontrados" class="tab-content active">
+            <div class="public-actions"><button class="btn-main-action bg-salvo" onclick="abrirFormularioActivo('encontrados')">➕ Reportar Persona o Mascota a Salvo</button></div>
+            <div class="section" style="border-left: 5px solid #5cb85c;">
+                <h2 class="section-title" style="color: #5cb85c;">🏠 Personas Encontradas / Refugios / Mascotas Resguardadas</h2>
+                <ul id="lista-encontrados" class="item-list"><li>Cargando registros...</li></ul>
+            </div>
+        </div>
+
+        <!-- PESTAÑA: ATRAPADOS -->
+        <div id="contenido-atrapados" class="tab-content">
+            <div class="public-actions"><button class="btn-main-action bg-critico" onclick="abrirFormularioActivo('atrapados')">⚠️ Reportar Persona Atrapada en Emergencia</button></div>
+            <div class="section" style="border-left: 5px solid #d9534f;">
+                <h2 class="section-title" style="color: #d9534f;">🚨 Reportes de Personas Atrapadas (Urgente)</h2>
+                <ul id="lista-atrapados" class="item-list"><li>Cargando registros...</li></ul>
+            </div>
+        </div>
+
+        <!-- PESTAÑA: DESAPARECIDOS -->
+        <div id="contenido-desaparecidos" class="tab-content">
+            <div class="public-actions"><button class="btn-main-action bg-busqueda" onclick="abrirFormularioActivo('desaparecidos')">🔍 Reportar Persona o Mascota Perdida</button></div>
+            <div class="section" style="border-left: 5px solid #f0ad4e;">
+                <h2 class="section-title" style="color: #f0ad4e;">🔍 Solicitudes de Búsqueda Activas</h2>
+                <ul id="lista-desaparecidos" class="item-list"><li>Cargando registros...</li></ul>
+            </div>
+        </div>
+
+        <!-- PESTAÑA: ACOPIOS -->
+        <div id="contenido-acopio" class="tab-content">
+            <div class="public-actions"><button class="btn-main-action bg-acopio" onclick="abrirFormularioActivo('acopio')">📦 Registrar Punto de Acopio</button></div>
+            <div class="section" style="border-left: 5px solid #6f42c1;">
+                <h2 class="section-title" style="color: #6f42c1;">📦 Centros de Acopio Activos e Insumos Solicitados</h2>
+                <ul id="lista-acopio" class="item-list"><li>Cargando registros...</li></ul>
+            </div>
+        </div>
+
+        <!-- PESTAÑA: NOTICIAS -->
+        <div id="contenido-noticias" class="tab-content">
+            <!-- BLOQUE DE REDACCIÓN COMPACTO (Visible para Dueño y Noticieros) -->
+            <div id="bloque-noticias-redaccion" class="public-actions" style="display: none; text-align: left; background: #eef7fc; border-color: #bce8f1;">
+                <h4 style="font-size:15px; margin-bottom:12px; color:#31708f; font-weight: bold;">📢 Redactar Noticia de Última Hora</h4>
+                <div class="input-group"><input type="text" id="not-titulo" placeholder="Título de la noticia"></div>
+                <div class="input-group"><textarea id="not-contenido" rows="2" placeholder="Cuerpo de la noticia verídica..."></textarea></div>
+                <div class="input-group"><input type="text" id="not-fuente" placeholder="Medio / Periodista de origen"></div>
+                <button class="btn-main-action bg-prensa" style="width:100%; justify-content: center;" onclick="publicarNoticia()">Publicar Noticia en el Portal</button>
+            </div>
+
+            <div class="section" style="border-left: 5px solid #0275d8;">
+                <h2 class="section-title" style="color: #0275d8;">📢 Cobertura Informativa Verificada</h2>
+                <ul id="lista-noticias" class="item-list"><li>Cargando noticias...</li></ul>
+            </div>
+            
+            <!-- Botón de logout rápido para reporteros -->
+            <div id="noticiero-logout-box" style="display:none; text-align:center; margin-top:15px;">
+                <button class="btn-main-action bg-critico" style="padding: 6px 12px; font-size:11px; width: auto;" onclick="cerrarSesion()">Cerrar Sesión de Reportero</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MODAL DE INGRESO -->
+    <div id="modal-login" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="cerrarModal()">&times;</span>
+            <h4 style="text-align:center; margin-bottom:15px; font-weight:700;">Acceso Personal Autorizado</h4>
+            <input type="email" id="login-email" placeholder="Correo electrónico">
+            <input type="password" id="login-password" placeholder="Contraseña">
+            <button class="btn-main-action bg-critico" style="width:100%; justify-content: center;" onclick="iniciarSesion()">Ingresar</button>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = "https://eiespojygliahqtjkkyd.supabase.co"; 
+        const SUPABASE_KEY = "sb_publishable_TlydS60DSu5pDs6i9LwIPQ_zl00u_mR";
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        const CORREO_DUENO_RAIZ = "mikuriyasha03@gmail.com"; 
+
+        let usuarioLogueado = null;
+        let rolActivo = "publico";
+
+        window.onload = async () => {
+            try {
+                const { data: { user } } = await _supabase.auth.getUser();
+                if (user) {
+                    usuarioLogueado = user;
+                    const emailLwr = user.email.toLowerCase();
+
+                    if (emailLwr === CORREO_DUENO_RAIZ.toLowerCase()) {
+                        rolActivo = "owner";
+                    } else {
+                        const { data: rData } = await _supabase.from('usuarios_roles').select('rol').eq('email', emailLwr).single();
+                        if (rData) rolActivo = rData.rol;
+                    }
+
+                    // Renderizar interfaces de forma inteligente según el Rol verificado
+                    if (rolActivo === "owner") {
+                        document.getElementById('role-badge').innerText = "PROPIETARIO MAESTRO";
+                        document.getElementById('bloque-gestion-roles').style.display = 'block';
+                        document.getElementById('bloque-lote-owner').style.display = 'block';
+                        document.getElementById('bloque-noticias-redaccion').style.display = 'block';
+                        document.getElementById('panel-personal').style.display = 'block';
+                    } else if (rolActivo === "moderador") {
+                        document.getElementById('role-badge').innerText = "MODERADOR AUTORIZADO";
+                        document.getElementById('panel-personal').style.display = 'block';
+                    } else if (rolActivo === "noticiero") {
+                        // REQUERIMIENTO: Si es noticiero, NO mostrar el panel azul superior. Solo activar la redacción de noticias abajo.
+                        document.getElementById('panel-personal').style.display = 'none'; 
+                        document.getElementById('bloque-noticias-redaccion').style.display = 'block';
+                        document.getElementById('noticiero-logout-box').style.display = 'block';
+                    }
+
+                    if (rolActivo !== "publico") {
+                        document.getElementById('btn-login-nav').innerText = "Cerrar Sesión / Mi Perfil";
+                        document.getElementById('btn-login-nav').onclick = () => {
+                            if (rolActivo === "noticiero") {
+                                cambiarPestana('noticias');
+                            } else {
+                                let p = document.getElementById('panel-personal');
+                                p.style.display = p.style.display === 'none' ? 'block' : 'none';
+                            }
+                        };
+                    }
+                }
+            } catch (e) {}
+            cargarContenido();
+        };
+
+        async function guardarRangoDinamico() {
+            if (rolActivo !== 'owner') return;
+            const targetEmail = document.getElementById('role-email').value.trim().toLowerCase();
+            const nuevoRol = document.getElementById('role-select').value;
+
+            if (!targetEmail) { alert("Escribe un correo válido."); return; }
+
+            if (nuevoRol === 'publico') {
+                const { error } = await _supabase.from('usuarios_roles').delete().eq('email', targetEmail);
+                if (error) alert("Error: " + error.message);
+                else { alert(`Rango eliminado para ${targetEmail}.`); document.getElementById('role-email').value = ""; }
+            } else {
+                const { error } = await _supabase.from('usuarios_roles').upsert({ email: targetEmail, rol: nuevoRol }, { onConflict: 'email' });
+                if (error) alert("Error al asignar rol: " + error.message);
+                else { alert(`¡Éxito! Rango asignado correctamente a ${targetEmail}.`); document.getElementById('role-email').value = ""; }
+            }
+        }
+
+        function cambiarPestana(destino) {
+            cerrarFormulario();
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById(`tab-${destino}-btn`).classList.add('active');
+            document.getElementById(`contenido-${destino}`).classList.add('active');
+        }
+
+        function abrirFormularioActivo(cat) {
+            // REQUERIMIENTO: Bloquear registro de acopios si no es Dueño o Moderador
+            if (cat === 'acopio' && rolActivo !== 'owner' && rolActivo !== 'moderador') {
+                alert("🚨 Permiso denegado: El registro y actualización de Centros de Acopio está restringido exclusivamente para Moderadores Oficiales y Propietarios.");
+                return;
+            }
+
+            document.getElementById('formulario-ciudadano').style.display = 'block';
+            document.getElementById('form-categoria').value = cat;
+            document.getElementById('form-edit-id').value = ""; 
+            document.getElementById('contenedor-foto-input').style.display = "block";
+            
+            const btnEnviar = document.getElementById('btn-enviar-reporte');
+            btnEnviar.className = "btn-main-action";
+            btnEnviar.innerText = "Publicar Registro Ahora";
+
+            if(cat === 'encontrados') {
+                document.getElementById('form-titulo').innerText = '🏠 Reportar Persona o Mascota Encontrada / A Salvo';
+                document.getElementById('lbl-nombre').innerText = 'Nombre de la Persona o Tipo de Mascota:';
+                document.getElementById('lbl-detalles').innerText = 'Estado, rasgos físicos u observaciones generales:';
+                document.getElementById('lbl-contacto').innerText = 'Ubicación de resguardo (Hospital, Albergue o Dirección provisional):';
+                btnEnviar.classList.add('bg-salvo');
+            } else if(cat === 'atrapados') {
+                document.getElementById('form-titulo').innerText = '🚨 Reportar Persona Atrapada';
+                document.getElementById('lbl-nombre').innerText = 'Ubicación / Sector afectado:';
+                document.getElementById('lbl-detalles').innerText = 'Descripción clara de la urgencia:';
+                document.getElementById('lbl-contacto').innerText = 'Número telefónico de contacto en el sitio:';
+                btnEnviar.classList.add('bg-critico');
+            } else if(cat === 'desaparecidos') {
+                document.getElementById('form-titulo').innerText = '🔍 Reportar Persona o Mascota Perdida';
+                document.getElementById('lbl-nombre').innerText = 'Nombre del Ciudadano o Mascota:';
+                document.getElementById('lbl-detalles').innerText = 'Última localización conocida, vestimenta o señas particulares:';
+                document.getElementById('lbl-contacto').innerText = 'Teléfono del familiar o dueño que busca:';
+                btnEnviar.classList.add('bg-busqueda');
+            } else if(cat === 'acopio') {
+                document.getElementById('form-titulo').innerText = '📦 Registrar Centro de Recepción de Insumos';
+                document.getElementById('lbl-nombre').innerText = 'Nombre de la Entidad o Punto de Acopio:';
+                document.getElementById('lbl-detalles').innerText = 'Insumos requeridos prioritarios y horarios:';
+                document.getElementById('lbl-contacto').innerText = 'Dirección física exacta y contacto:';
+                btnEnviar.classList.add('bg-acopio');
+            }
+            window.scrollTo({ top: 120, behavior: 'smooth' });
+        }
+
+        function cerrarFormulario() { document.getElementById('formulario-ciudadano').style.display = 'none'; }
+        function abrirModal() { document.getElementById('modal-login').style.display = 'block'; }
+        function cerrarModal() { document.getElementById('modal-login').style.display = 'none'; }
+        
+        function mostrarNombreArchivo(input) {
+            const preview = document.getElementById('file-name-preview');
+            if (input.files && input.files.length > 0) {
+                preview.style.display = 'block';
+                preview.innerText = `✓ Foto lista: ${input.files[0].name.substring(0, 22)}...`;
+            }
+        }
+
+        async function importarListaJSON() {
+            if (rolActivo !== 'owner') return;
+            const textoJson = document.getElementById('json-input').value;
+            const destinoCategoria = document.getElementById('json-destino').value;
+            if(!textoJson.trim()) return;
+            try {
+                const lista = JSON.parse(textoJson);
+                const filas = lista.map(p => ({ nombre: p.nombre, detalles: p.detalles || "Sin especificar", contacto: p.contacto || "No provisto", categoria: destinoCategoria }));
+                await _supabase.from('reportes').insert(filas);
+                alert("Lote importado con éxito.");
+                document.getElementById('json-input').value = "";
+                cargarContenido();
+            } catch (err) { alert("Error de formato JSON."); }
+        }
+
+        async function enviarReportePublico() {
+            const nombre = document.getElementById('form-nombre').value;
+            const category = document.getElementById('form-categoria').value;
+            const detalles = document.getElementById('form-detalles').value;
+            const contacto = document.getElementById('form-contacto').value;
+            const editId = document.getElementById('form-edit-id').value;
+            const archivoFoto = document.getElementById('form-foto').files[0];
+
+            if(!nombre || !detalles) { alert("Completa los campos obligatorios."); return; }
+
+            if (editId) {
+                if(rolActivo !== 'owner') return;
+                await _supabase.from('reportes').update({ nombre, detalles, contacto }).eq('id', editId);
+                alert("Modificación guardada.");
+            } else {
+                let urlFotoPublica = null;
+                if (archivoFoto) {
+                    const nombreArchivo = `${Date.now()}_${archivoFoto.name.replace(/\s/g, '_')}`;
+                    const { data: dUpload, error: errUpload } = await _supabase.storage.from('fotos-reportes').upload(nombreArchivo, archivoFoto);
+                    if (!errUpload) {
+                        const { data: dUrl } = _supabase.storage.from('fotos-reportes').getPublicUrl(nombreArchivo);
+                        urlFotoPublica = dUrl.publicUrl;
+                    }
+                }
+                await _supabase.from('reportes').insert([{ nombre, categoria: category, detalles, contacto, foto: urlFotoPublica }]);
+                alert("Reporte enviado exitosamente.");
+            }
+
+            document.getElementById('form-nombre').value = "";
+            document.getElementById('form-detalles').value = "";
+            document.getElementById('form-contacto').value = "";
+            document.getElementById('form-foto').value = "";
+            document.getElementById('form-edit-id').value = "";
+            cerrarFormulario();
+            cargarContenido();
+        }
+
+        function prepararEdicion(id, nombre, detalles, contacto, categoria) {
+            if (rolActivo !== 'owner') return;
+            abrirFormularioActivo(categoria);
+            document.getElementById('form-titulo').innerText = "📝 Modificar Registro (Dueño)";
+            document.getElementById('form-nombre').value = nombre;
+            document.getElementById('form-detalles').value = detalles;
+            document.getElementById('form-contacto').value = contacto;
+            document.getElementById('form-edit-id').value = id;
+            document.getElementById('contenedor-foto-input').style.display = "none";
+            document.getElementById('btn-enviar-reporte').innerText = "Guardar Cambios";
+        }
+
+        async function publicarNoticia() {
+            if(rolActivo !== 'owner' && rolActivo !== 'noticiero') return;
+            const titulo = document.getElementById('not-titulo').value;
+            const contenido = document.getElementById('not-contenido').value;
+            const fuente = document.getElementById('not-fuente').value;
+            if(!titulo || !contenido) return;
+
+            await _supabase.from('noticias').insert([{ titulo, contenido, fuente }]);
+            document.getElementById('not-titulo').value = "";
+            document.getElementById('not-contenido').value = "";
+            document.getElementById('not-fuente').value = "";
+            cargarContenido();
+            alert("Noticia publicada.");
+        }
+
+        async function cargarContenido() {
+            const { data: reportes } = await _supabase.from('reportes').select('*').order('created_at', { ascending: false });
+            const { data: noticias } = await _supabase.from('noticias').select('*').order('created_at', { ascending: false });
+
+            const listaNoticias = document.getElementById('lista-noticias');
+            listaNoticias.innerHTML = noticias && noticias.length > 0 ? "" : "<li>Sin novedades informativas.</li>";
+            noticias?.forEach(item => {
+                let btns = rolActivo === 'owner' ? `<div class="mod-actions"><button class="btn-delete-troll" onclick="eliminarItem('noticias', ${item.id})">🗑️ Eliminar</button></div>` : '';
+                listaNoticias.innerHTML += `<li><span class="badge badge-info">Prensa</span> <strong>${item.titulo}</strong> — ${item.contenido} <span class="meta-info">Fuente: ${item.fuente}</span> ${btns}</li>`;
+            });
+
+            // CORRECCIÓN DUPLICACIÓN: Limpiar listas completamente antes de inyectar las filas
+            const con = { 'atrapados': 'lista-atrapados', 'desaparecidos': 'lista-desaparecidos', 'encontrados': 'lista-encontrados', 'acopio': 'lista-acopio' };
+            Object.values(con).forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.innerHTML = "<li>No hay registros en este apartado.</li>";
+            });
+
+            if (reportes && reportes.length > 0) {
+                // Vaciar los textos por defecto solo si hay información real que mostrar
+                Object.values(con).forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.innerHTML = "";
+                });
+                
+                reportes.forEach(item => {
+                    const contenedorDestino = document.getElementById(con[item.categoria]);
+                    if(!contenedorDestino) return;
+
+                    let btnsHTML = '';
+                    let esAcopio = item.categoria === 'acopio';
+
+                    if (rolActivo === 'owner') {
+                        btnsHTML = `
+                            <div class="mod-actions">
+                                <button class="btn-delete-troll" onclick="eliminarItem('reportes', ${item.id}, '${item.foto}')">🗑️ Eliminar</button>
+                                <button class="btn-edit-owner" onclick="prepararEdicion(${item.id}, \`${item.nombre}\`, \`${item.detalles}\`, \`${item.contacto}\`, '${item.categoria}')">📝 Modificar</button>
+                            </div>`;
+                    } else if (rolActivo === 'moderador' && !esAcopio) {
+                        btnsHTML = `<div class="mod-actions"><button class="btn-delete-troll" onclick="eliminarItem('reportes', ${item.id}, '${item.foto}')">🗑️ Eliminar</button></div>`;
+                    }
+
+                    let imgHtml = item.foto ? `<img src="${item.foto}" class="report-img" alt="Evidencia">` : '';
+
+                    if (item.categoria === 'encontrados') {
+                        contenedorDestino.innerHTML += `<li><span class="badge badge-success">A Salvo</span> <strong>${item.nombre}:</strong> ${item.detalles} <span class="meta-info">Ubicación/Contacto: ${item.contacto}</span> ${imgHtml} ${btnsHTML}</li>`;
+                    } else if (item.categoria === 'atrapados') {
+                        contenedorDestino.innerHTML += `<li><span class="badge badge-danger">Atrapado</span> <strong>${item.nombre}:</strong> ${item.detalles} <span class="meta-info">Contacto: ${item.contacto}</span> ${imgHtml} ${btnsHTML}</li>`;
+                    } else if (item.categoria === 'desaparecidos') {
+                        contenedorDestino.innerHTML += `<li><strong>${item.nombre}:</strong> ${item.detalles} <span class="meta-info">Busca: ${item.contacto}</span> ${imgHtml} ${btnsHTML}</li>`;
+                    } else if (item.categoria === 'acopio') {
+                        contenedorDestino.innerHTML += `<li><span class="badge badge-acopio">Acopio</span> <strong>${item.nombre}:</strong> ${item.detalles} <span class="meta-info">Ubicación: ${item.contacto}</span> ${imgHtml} ${btnsHTML}</li>`;
+                    }
+                });
+            }
+        }
+
+        async function eliminarItem(tabla, id, urlFoto = 'null') {
+            if (rolActivo === 'publico' || rolActivo === 'noticiero') return;
+            if (rolActivo === 'moderador' && tabla === 'noticias') return;
+
+            if(confirm("¿Deseas eliminar este registro de forma permanente?")) {
+                if (tabla === 'reportes' && urlFoto && urlFoto !== 'null' && urlFoto !== 'undefined') {
+                    try { await _supabase.storage.from('fotos-reportes').remove([urlFoto.split('/').pop()]); } catch(e) {}
+                }
+                await _supabase.from(tabla).delete().eq('id', id);
+                cargarContenido();
+            }
+        }
+
+        async function iniciarSesion() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const { error } = await _supabase.auth.signInWithPassword({ email, password });
+            if (error) alert("Credenciales incorrectas"); else location.reload();
+        }
+        async function cerrarSesion() { await _supabase.auth.signOut(); location.reload(); }
+    </script>
+</body>
+</html>
