@@ -6,34 +6,34 @@
     <title>SOS Venezuela - Portal de Emergencia</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        :root { --primary: #d9534f; --gray: #f4f6f8; --border: #e3e4e6; --text: #333; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: var(--gray); color: var(--text); padding-bottom: 40px; }
-        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #f4f6f8; color: #333; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; }
 
         /* Tabs */
-        .tabs-container { display: flex; gap: 5px; margin-bottom: 20px; overflow-x: auto; background: white; padding: 10px; border-radius: 12px; }
-        .tab-btn { flex: 1; padding: 10px; font-size: 11px; font-weight: 700; border: none; background: #f8f9fa; border-radius: 8px; cursor: pointer; transition: 0.3s; color: #666; }
-        .tab-btn.active { background: var(--primary); color: white; }
+        .tabs-container { display: flex; gap: 5px; margin-bottom: 20px; background: white; padding: 8px; border-radius: 10px; border: 1px solid #dcdcdc; }
+        .tab-btn { flex: 1; padding: 12px; font-size: 12px; font-weight: 700; border: none; background: transparent; border-radius: 6px; cursor: pointer; color: #666; }
+        .tab-btn.active { background: #d9534f; color: white; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        /* Botones de acción */
-        .action-area { text-align: center; margin-bottom: 20px; }
-        .btn-main { background: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: 25px; font-weight: 600; cursor: pointer; font-size: 14px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-
-        /* Formulario Estético */
-        .form-box { background: white; padding: 25px; border-radius: 16px; border: 1px solid var(--border); margin-bottom: 20px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); display: none; }
-        input, textarea { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 10px; font-family: inherit; font-size: 14px; }
-        input:focus, textarea:focus { outline: none; border-color: var(--primary); }
-        .btn-publish { width: 100%; background: #222; color: white; border: none; padding: 14px; border-radius: 10px; font-weight: 700; cursor: pointer; }
+        /* Formulario Estético pero Simple */
+        .form-box { background: white; padding: 20px; border-radius: 12px; border: 1px solid #dcdcdc; margin-bottom: 20px; display: none; }
+        .input-group { margin-bottom: 15px; }
+        label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 5px; color: #555; }
+        input[type="text"], textarea { 
+            width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; 
+            font-size: 14px; transition: border-color 0.2s;
+        }
+        input[type="text"]:focus, textarea:focus { border-color: #d9534f; outline: none; box-shadow: 0 0 0 3px rgba(217,83,79,0.1); }
+        .btn-publish { width: 100%; background: #d9534f; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 700; cursor: pointer; }
 
         /* Feed */
-        .feed-card { background: white; border-radius: 16px; padding: 20px; border: 1px solid var(--border); margin-bottom: 15px; }
-        .feed-header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
-        .feed-avatar { width: 60px; height: 60px; border-radius: 12px; object-fit: cover; background: #f0f0f0; }
-        .feed-username { font-weight: 800; font-size: 16px; }
-        .feed-body { font-size: 14px; line-height: 1.5; color: #444; }
+        .feed-card { background: white; border: 1px solid #dcdcdc; border-radius: 12px; padding: 16px; margin-bottom: 15px; }
+        .feed-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+        .feed-avatar { width: 45px; height: 45px; border-radius: 8px; object-fit: cover; background: #eee; }
+        .feed-username { font-weight: 700; font-size: 14px; }
+        .feed-body { font-size: 14px; color: #444; }
     </style>
 </head>
 <body>
@@ -46,17 +46,13 @@
         </div>
 
         <div id="formulario-ciudadano" class="form-box">
-            <h3 style="margin-bottom: 15px;">Nuevo reporte</h3>
+            <h3 style="margin-bottom: 15px; font-size: 16px;">Nuevo reporte</h3>
             <input type="hidden" id="form-categoria">
-            <input type="text" id="form-nombre" placeholder="Nombre completo">
-            <textarea id="form-detalles" placeholder="¿Qué sucede o dónde está?" rows="3"></textarea>
-            <input type="text" id="form-contacto" placeholder="Teléfono de contacto">
-            <input type="file" id="form-foto" accept="image/*">
-            <button class="btn-publish" onclick="enviarReportePublico()">Publicar Información</button>
-        </div>
-
-        <div id="area-botones" class="action-area">
-            <button id="btn-reportar-dinamico" class="btn-main" onclick="mostrarFormulario()">+ Crear nuevo reporte</button>
+            <div class="input-group"><input type="text" id="form-nombre" placeholder="Nombre completo"></div>
+            <div class="input-group"><textarea id="form-detalles" placeholder="Detalles de la situación" rows="3"></textarea></div>
+            <div class="input-group"><input type="text" id="form-contacto" placeholder="Teléfono o ubicación"></div>
+            <div class="input-group"><input type="file" id="form-foto" accept="image/*"></div>
+            <button class="btn-publish" onclick="enviarReportePublico()">Publicar</button>
         </div>
 
         <div id="contenido-encontrados" class="tab-content active"><div id="lista-encontrados"></div></div>
@@ -74,15 +70,12 @@
             document.getElementById('contenido-' + cat).classList.add('active');
             document.getElementById('tab-' + cat + '-btn').classList.add('active');
             document.getElementById('form-categoria').value = cat;
-            document.getElementById('formulario-ciudadano').style.display = 'none';
+            document.getElementById('formulario-ciudadano').style.display = 'block';
         }
-
-        function mostrarFormulario() { document.getElementById('formulario-ciudadano').style.display = 'block'; }
 
         async function cargarContenido() {
             const { data: reportes } = await _supabase.from('reportes').select('*').order('created_at', { ascending: false });
-            const categorias = ['encontrados', 'atrapados', 'desaparecidos'];
-            categorias.forEach(cat => {
+            ['encontrados', 'atrapados', 'desaparecidos'].forEach(cat => {
                 const contenedor = document.getElementById('lista-' + cat);
                 contenedor.innerHTML = "";
                 const filtrados = reportes ? reportes.filter(r => r.categoria === cat) : [];
