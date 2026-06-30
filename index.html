@@ -6,134 +6,115 @@
     <title>SOS Venezuela - Portal de Emergencia</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
+        :root { --primary: #d9534f; --gray: #f4f6f8; --border: #e3e4e6; --text: #333; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; line-height: 1.6; color: #222; background-color: #f4f6f8; padding-bottom: 60px; }
-        .container { max-width: 800px; margin: 0 auto; padding: 15px; }
-        
-        .navbar { display: flex; justify-content: space-between; align-items: center; background-color: #d9534f; color: white; padding: 12px 20px; border-bottom: 3px solid #b52b27; }
-        .navbar-brand { font-weight: bold; font-size: 16px; }
-        .btn-nav { background-color: rgba(255, 255, 255, 0.2); color: white; border: 1px solid white; padding: 6px 12px; font-size: 13px; font-weight: bold; border-radius: 4px; cursor: pointer; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: var(--gray); color: var(--text); padding-bottom: 40px; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
 
-        .tabs-container { display: flex; flex-wrap: wrap; background: white; margin-bottom: 20px; border-bottom: 2px solid #e3e4e6; }
-        .tab-btn { flex: 1; min-width: 120px; padding: 14px 8px; text-align: center; font-weight: bold; font-size: 12px; background: none; border: none; cursor: pointer; color: #555; border-bottom: 4px solid transparent; }
-        .tab-btn.active { color: #d9534f; border-bottom: 4px solid #d9534f; background-color: #fff5f5; }
+        /* Tabs */
+        .tabs-container { display: flex; gap: 5px; margin-bottom: 20px; overflow-x: auto; background: white; padding: 10px; border-radius: 12px; }
+        .tab-btn { flex: 1; padding: 10px; font-size: 11px; font-weight: 700; border: none; background: #f8f9fa; border-radius: 8px; cursor: pointer; transition: 0.3s; color: #666; }
+        .tab-btn.active { background: var(--primary); color: white; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        .public-actions { background: white; padding: 20px; border-radius: 12px; border: 1px solid #e3e4e6; margin-bottom: 25px; text-align: center; }
-        .btn-main-action { padding: 12px 24px; font-weight: 700; color: white; border: none; border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
-        .bg-critico { background-color: #d9534f; } .bg-busqueda { background-color: #f0ad4e; } .bg-salvo { background-color: #5cb85c; } .bg-acopio { background-color: #6f42c1; }
-        
-        .feed-container { display: flex; flex-direction: column; gap: 20px; }
-        .feed-card { background: white; border: 1px solid #e3e4e6; border-radius: 12px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-        .feed-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
-        .feed-avatar { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; background: #eee; border: 1px solid #ddd; }
-        .feed-username { font-weight: 700; font-size: 15px; }
-        .feed-body { font-size: 14px; color: #333; }
-        .admin-panel { background: #eef7fc; padding: 20px; border-radius: 12px; margin-bottom: 25px; display: none; }
-        .btn-delete-troll { background-color: #d9534f; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; float: right; }
+        /* Botones de acción */
+        .action-area { text-align: center; margin-bottom: 20px; }
+        .btn-main { background: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: 25px; font-weight: 600; cursor: pointer; font-size: 14px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+
+        /* Formulario Estético */
+        .form-box { background: white; padding: 25px; border-radius: 16px; border: 1px solid var(--border); margin-bottom: 20px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); display: none; }
+        input, textarea { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 10px; font-family: inherit; font-size: 14px; }
+        input:focus, textarea:focus { outline: none; border-color: var(--primary); }
+        .btn-publish { width: 100%; background: #222; color: white; border: none; padding: 14px; border-radius: 10px; font-weight: 700; cursor: pointer; }
+
+        /* Feed */
+        .feed-card { background: white; border-radius: 16px; padding: 20px; border: 1px solid var(--border); margin-bottom: 15px; }
+        .feed-header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
+        .feed-avatar { width: 60px; height: 60px; border-radius: 12px; object-fit: cover; background: #f0f0f0; }
+        .feed-username { font-weight: 800; font-size: 16px; }
+        .feed-body { font-size: 14px; line-height: 1.5; color: #444; }
     </style>
 </head>
 <body>
 
-    <nav class="navbar">
-        <div class="navbar-brand">🚨 SOS VENEZUELA</div>
-        <button id="btn-login-nav" class="btn-nav" onclick="abrirModal()">Acceso</button>
-    </nav>
-
-    <div class="tabs-container">
-        <button id="tab-encontrados-btn" class="tab-btn active" onclick="cambiarPestana('encontrados')">PERSONAS A SALVO</button>
-        <button id="tab-atrapados-btn" class="tab-btn" onclick="cambiarPestana('atrapados')">🚨 ATRAPADOS</button>
-        <button id="tab-desaparecidos-btn" class="tab-btn" onclick="cambiarPestana('desaparecidos')">🔍 DESAPARECIDOS</button>
-        <button id="tab-acopio-btn" class="tab-btn" onclick="cambiarPestana('acopio')">📦 ACOPIOS</button>
-        <button id="tab-noticias-btn" class="tab-btn" onclick="cambiarPestana('noticias')">📢 NOTICIAS</button>
-    </div>
-
     <div class="container">
-        <div id="panel-personal" class="admin-panel">
-            <h3>Panel Operativo</h3>
-            <button class="btn-main-action bg-critico" onclick="cerrarSesion()">Cerrar Sesión</button>
+        <div class="tabs-container">
+            <button id="tab-encontrados-btn" class="tab-btn active" onclick="cambiarPestana('encontrados')">A SALVO</button>
+            <button id="tab-atrapados-btn" class="tab-btn" onclick="cambiarPestana('atrapados')">ATRAPADOS</button>
+            <button id="tab-desaparecidos-btn" class="tab-btn" onclick="cambiarPestana('desaparecidos')">DESAPARECIDOS</button>
         </div>
 
-        <div id="formulario-ciudadano" style="display:none;" class="public-actions">
+        <div id="formulario-ciudadano" class="form-box">
+            <h3 style="margin-bottom: 15px;">Nuevo reporte</h3>
             <input type="hidden" id="form-categoria">
-            <input type="text" id="form-nombre" placeholder="Nombre" style="width:100%; padding:10px; margin-bottom:10px;">
-            <textarea id="form-detalles" placeholder="Detalles" style="width:100%; padding:10px; margin-bottom:10px;"></textarea>
-            <input type="text" id="form-contacto" placeholder="Contacto" style="width:100%; padding:10px; margin-bottom:10px;">
+            <input type="text" id="form-nombre" placeholder="Nombre completo">
+            <textarea id="form-detalles" placeholder="¿Qué sucede o dónde está?" rows="3"></textarea>
+            <input type="text" id="form-contacto" placeholder="Teléfono de contacto">
             <input type="file" id="form-foto" accept="image/*">
-            <button class="btn-main-action bg-salvo" onclick="enviarReportePublico()">Publicar Reporte</button>
+            <button class="btn-publish" onclick="enviarReportePublico()">Publicar Información</button>
         </div>
 
-        <div id="contenido-encontrados" class="tab-content active"><div id="lista-encontrados" class="feed-container"></div></div>
-        <div id="contenido-atrapados" class="tab-content"><div id="lista-atrapados" class="feed-container"></div></div>
-        <div id="contenido-desaparecidos" class="tab-content"><div id="lista-desaparecidos" class="feed-container"></div></div>
-        <div id="contenido-acopio" class="tab-content"><div id="lista-acopio" class="feed-container"></div></div>
-        <div id="contenido-noticias" class="tab-content"><div id="lista-noticias" class="feed-container"></div></div>
+        <div id="area-botones" class="action-area">
+            <button id="btn-reportar-dinamico" class="btn-main" onclick="mostrarFormulario()">+ Crear nuevo reporte</button>
+        </div>
+
+        <div id="contenido-encontrados" class="tab-content active"><div id="lista-encontrados"></div></div>
+        <div id="contenido-atrapados" class="tab-content"><div id="lista-atrapados"></div></div>
+        <div id="contenido-desaparecidos" class="tab-content"><div id="lista-desaparecidos"></div></div>
     </div>
 
     <script>
-        const SUPABASE_URL = "https://eiespojygliahqtjkkyd.supabase.co"; 
-        const SUPABASE_KEY = "sb_publishable_TlydS60DSu5pDs6i9LwIPQ_zl00u_mR";
-        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const _supabase = supabase.createClient("https://eiespojygliahqtjkkyd.supabase.co", "sb_publishable_TlydS60DSu5pDs6i9LwIPQ_zl00u_mR");
         const ICONO_SIN_FOTO = "https://ui-avatars.com/api/?name=SOS&background=e2e8f0&color=64748b&size=128";
-
-        async function cargarContenido() {
-            const { data: reportes } = await _supabase.from('reportes').select('*').order('created_at', { ascending: false });
-            
-            const contenedores = {
-                'encontrados': document.getElementById('lista-encontrados'),
-                'atrapados': document.getElementById('lista-atrapados'),
-                'desaparecidos': document.getElementById('lista-desaparecidos'),
-                'acopio': document.getElementById('lista-acopio')
-            };
-
-            Object.keys(contenedores).forEach(cat => {
-                contenedores[cat].innerHTML = "";
-                const filtrados = reportes ? reportes.filter(r => r.categoria === cat) : [];
-                filtrados.forEach(item => {
-                    const fotoPerfil = item.foto || ICONO_SIN_FOTO;
-                    contenedores[cat].innerHTML += `
-                        <div class="feed-card">
-                            <div class="feed-header">
-                                <img src="${fotoPerfil}" class="feed-avatar">
-                                <span class="feed-username">${item.nombre}</span>
-                            </div>
-                            <div class="feed-body">
-                                <p>${item.detalles}</p>
-                                <p style="margin-top:10px; font-weight:bold;">Contacto: ${item.contacto}</p>
-                            </div>
-                        </div>
-                    `;
-                });
-            });
-        }
-
-        async function enviarReportePublico() {
-            const nombre = document.getElementById('form-nombre').value;
-            const cat = document.getElementById('form-categoria').value;
-            const detalles = document.getElementById('form-detalles').value;
-            const contacto = document.getElementById('form-contacto').value;
-            const fotoFile = document.getElementById('form-foto').files[0];
-            
-            let urlFoto = null;
-            if (fotoFile) {
-                const nombreArchivo = `${Date.now()}_${fotoFile.name}`;
-                const { data } = await _supabase.storage.from('fotos-reportes').upload(nombreArchivo, fotoFile);
-                if (data) urlFoto = _supabase.storage.from('fotos-reportes').getPublicUrl(nombreArchivo).data.publicUrl;
-            }
-
-            await _supabase.from('reportes').insert([{ nombre, categoria: cat, detalles, contacto, foto: urlFoto }]);
-            alert("Publicado");
-            location.reload();
-        }
 
         function cambiarPestana(cat) {
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.getElementById('contenido-' + cat).classList.add('active');
             document.getElementById('tab-' + cat + '-btn').classList.add('active');
-            document.getElementById('formulario-ciudadano').style.display = 'block';
             document.getElementById('form-categoria').value = cat;
+            document.getElementById('formulario-ciudadano').style.display = 'none';
+        }
+
+        function mostrarFormulario() { document.getElementById('formulario-ciudadano').style.display = 'block'; }
+
+        async function cargarContenido() {
+            const { data: reportes } = await _supabase.from('reportes').select('*').order('created_at', { ascending: false });
+            const categorias = ['encontrados', 'atrapados', 'desaparecidos'];
+            categorias.forEach(cat => {
+                const contenedor = document.getElementById('lista-' + cat);
+                contenedor.innerHTML = "";
+                const filtrados = reportes ? reportes.filter(r => r.categoria === cat) : [];
+                filtrados.forEach(item => {
+                    contenedor.innerHTML += `
+                        <div class="feed-card">
+                            <div class="feed-header">
+                                <img src="${item.foto || ICONO_SIN_FOTO}" class="feed-avatar">
+                                <span class="feed-username">${item.nombre}</span>
+                            </div>
+                            <div class="feed-body">${item.detalles}<br><br><b>Contacto:</b> ${item.contacto}</div>
+                        </div>`;
+                });
+            });
+        }
+
+        async function enviarReportePublico() {
+            const nombre = document.getElementById('form-nombre').value;
+            const cat = document.getElementById('form-categoria').value || 'encontrados';
+            const detalles = document.getElementById('form-detalles').value;
+            const contacto = document.getElementById('form-contacto').value;
+            const fotoFile = document.getElementById('form-foto').files[0];
+            
+            let urlFoto = null;
+            if (fotoFile) {
+                const path = `${Date.now()}_${fotoFile.name}`;
+                const { data } = await _supabase.storage.from('fotos-reportes').upload(path, fotoFile);
+                if (data) urlFoto = _supabase.storage.from('fotos-reportes').getPublicUrl(path).data.publicUrl;
+            }
+
+            await _supabase.from('reportes').insert([{ nombre, categoria: cat, detalles, contacto, foto: urlFoto }]);
+            location.reload();
         }
 
         window.onload = cargarContenido;
