@@ -7,25 +7,24 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #f4f6f8; color: #333; padding: 20px; }
-        .container { max-width: 600px; margin: 0 auto; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #f4f6f8; color: #333; padding-bottom: 60px; }
+        .container { max-width: 600px; margin: 0 auto; padding: 15px; }
+
+        /* Navbar */
+        .navbar { background-color: #d9534f; color: white; padding: 15px; text-align: center; font-weight: bold; }
 
         /* Tabs */
-        .tabs-container { display: flex; gap: 5px; margin-bottom: 20px; background: white; padding: 8px; border-radius: 10px; border: 1px solid #dcdcdc; }
-        .tab-btn { flex: 1; padding: 12px; font-size: 12px; font-weight: 700; border: none; background: transparent; border-radius: 6px; cursor: pointer; color: #666; }
+        .tabs-container { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 20px; background: white; padding: 8px; border-radius: 10px; border: 1px solid #dcdcdc; }
+        .tab-btn { flex: 1; min-width: 90px; padding: 10px; font-size: 11px; font-weight: 700; border: none; background: transparent; border-radius: 6px; cursor: pointer; color: #666; }
         .tab-btn.active { background: #d9534f; color: white; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        /* Formulario Estético pero Simple */
+        /* Formulario */
         .form-box { background: white; padding: 20px; border-radius: 12px; border: 1px solid #dcdcdc; margin-bottom: 20px; display: none; }
         .input-group { margin-bottom: 15px; }
-        label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 5px; color: #555; }
-        input[type="text"], textarea { 
-            width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; 
-            font-size: 14px; transition: border-color 0.2s;
-        }
-        input[type="text"]:focus, textarea:focus { border-color: #d9534f; outline: none; box-shadow: 0 0 0 3px rgba(217,83,79,0.1); }
+        input[type="text"], textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; font-size: 14px; }
+        input[type="text"]:focus, textarea:focus { border-color: #d9534f; outline: none; }
         .btn-publish { width: 100%; background: #d9534f; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 700; cursor: pointer; }
 
         /* Feed */
@@ -38,11 +37,15 @@
 </head>
 <body>
 
+    <div class="navbar">🚨 SOS VENEZUELA</div>
+
     <div class="container">
         <div class="tabs-container">
             <button id="tab-encontrados-btn" class="tab-btn active" onclick="cambiarPestana('encontrados')">A SALVO</button>
             <button id="tab-atrapados-btn" class="tab-btn" onclick="cambiarPestana('atrapados')">ATRAPADOS</button>
             <button id="tab-desaparecidos-btn" class="tab-btn" onclick="cambiarPestana('desaparecidos')">DESAPARECIDOS</button>
+            <button id="tab-acopio-btn" class="tab-btn" onclick="cambiarPestana('acopio')">ACOPIOS</button>
+            <button id="tab-noticias-btn" class="tab-btn" onclick="cambiarPestana('noticias')">NOTICIAS</button>
         </div>
 
         <div id="formulario-ciudadano" class="form-box">
@@ -50,7 +53,7 @@
             <input type="hidden" id="form-categoria">
             <div class="input-group"><input type="text" id="form-nombre" placeholder="Nombre completo"></div>
             <div class="input-group"><textarea id="form-detalles" placeholder="Detalles de la situación" rows="3"></textarea></div>
-            <div class="input-group"><input type="text" id="form-contacto" placeholder="Teléfono o ubicación"></div>
+            <div class="input-group"><input type="text" id="form-contacto" placeholder="Teléfono o contacto"></div>
             <div class="input-group"><input type="file" id="form-foto" accept="image/*"></div>
             <button class="btn-publish" onclick="enviarReportePublico()">Publicar</button>
         </div>
@@ -58,6 +61,8 @@
         <div id="contenido-encontrados" class="tab-content active"><div id="lista-encontrados"></div></div>
         <div id="contenido-atrapados" class="tab-content"><div id="lista-atrapados"></div></div>
         <div id="contenido-desaparecidos" class="tab-content"><div id="lista-desaparecidos"></div></div>
+        <div id="contenido-acopio" class="tab-content"><div id="lista-acopio"></div></div>
+        <div id="contenido-noticias" class="tab-content"><div id="lista-noticias"></div></div>
     </div>
 
     <script>
@@ -75,7 +80,7 @@
 
         async function cargarContenido() {
             const { data: reportes } = await _supabase.from('reportes').select('*').order('created_at', { ascending: false });
-            ['encontrados', 'atrapados', 'desaparecidos'].forEach(cat => {
+            ['encontrados', 'atrapados', 'desaparecidos', 'acopio', 'noticias'].forEach(cat => {
                 const contenedor = document.getElementById('lista-' + cat);
                 contenedor.innerHTML = "";
                 const filtrados = reportes ? reportes.filter(r => r.categoria === cat) : [];
