@@ -39,6 +39,7 @@
             margin-bottom: 15px;
             border: 2px solid rgba(110, 231, 183, 0.4);
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            background: rgba(255, 255, 255, 0.05);
         }
 
         .splash-title {
@@ -95,9 +96,7 @@
             transform: translateY(-1px);
         }
 
-        .glass-button.full-width {
-            width: 100%;
-        }
+        .glass-button.full-width { width: 100%; }
 
         .glass-button.secondary {
             background: rgba(255, 255, 255, 0.05);
@@ -149,6 +148,7 @@
             border-radius: 50%;
             object-fit: cover;
             border: 1px solid rgba(110, 231, 183, 0.4);
+            background: rgba(255, 255, 255, 0.05);
         }
 
         /* CONTENEDOR PRINCIPAL */
@@ -302,10 +302,7 @@
         .user-name { font-weight: 600; font-size: 14px; margin: 0; color: #fff; }
         .user-role { font-size: 11px; opacity: 0.7; margin: 0; color: #34d399; text-transform: uppercase; }
 
-        .admin-actions {
-            display: flex;
-            gap: 6px;
-        }
+        .admin-actions { display: flex; gap: 6px; }
 
         .card-body { text-align: left; margin-bottom: 16px; }
         .card-title { font-size: 19px; font-weight: 700; margin: 0 0 6px 0; letter-spacing: -0.01em; }
@@ -411,7 +408,7 @@
     <!-- PANTALLA DE CARGA -->
     <div id="splash-screen">
         <div class="splash-logo-container">
-            <img id="logo-splash-img" src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=200&q=80" alt="Logo" class="splash-img-logo">
+            <img id="logo-splash-img" src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=200&q=80" alt="Logo" class="splash-img-logo" onerror="this.src='https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&h=100&q=80'">
             <div class="splash-title">Wondertech Technologies</div>
         </div>
     </div>
@@ -420,7 +417,7 @@
     <nav class="apple-nav">
         <div class="apple-nav-content">
             <div class="nav-brand-container" onclick="cambiarPestana('feed')">
-                <img id="logo-nav-img" src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=100&q=80" alt="Logo">
+                <img id="logo-nav-img" src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=100&q=80" alt="Logo" onerror="this.src='https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&h=100&q=80'">
                 <span>Wondertech Store</span>
             </div>
             <div>
