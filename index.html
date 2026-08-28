@@ -65,7 +65,7 @@
             color: #f5f5f7; 
             background: radial-gradient(circle at 50% -20%, #172554 0%, #030712 60%, #000000 100%);
             min-height: 150vh; 
-            padding-bottom: 100px; /* Espacio extra para que la barra móvil no tape contenido */
+            padding-bottom: 100px; /* Espacio extra para dispositivos móviles */
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
         }
@@ -163,7 +163,7 @@
             background: rgba(255, 255, 255, 0.05);
         }
 
-        /* BARRA CENTRAL DE CATEGORÍAS (ESCRITORIO) */
+        /* BARRA CENTRAL DE CATEGORÍAS (ESCRITORIO / PC) */
         .store-nav-inline {
             display: flex;
             gap: 10px;
@@ -227,9 +227,9 @@
         }
 
         @media (max-width: 768px) {
-            /* Ocultamos las categorías de la barra superior en pantallas pequeñas para limpiar la interfaz */
+            /* Ocultamos las categorías de la barra superior solo en celulares para limpiar espacio */
             .apple-nav .store-nav-inline {
-                display: none;
+                display: none !important;
             }
 
             /* Mostramos y posicionamos la barra independiente flotante inferior */
@@ -287,9 +287,7 @@
         }
         /* ======================================================== */
 
-        /* ========================================================
-           EFECTO WAVE (OLA) - SIN DESENFOQUE
-           ======================================================== */
+        /* EFECTO WAVE (OLA) */
         .main-container {
             max-width: 1024px;
             margin: 0 auto;
@@ -317,32 +315,9 @@
         }
 
         .slide-from-right > *:not(.feed-container),
-        .slide-from-right .feed-container > * {
-            animation-name: waveInRight;
-        }
-
+        .slide-from-right .feed-container > * { animation-name: waveInRight; }
         .slide-from-left > *:not(.feed-container),
-        .slide-from-left .feed-container > * {
-            animation-name: waveInLeft;
-        }
-
-        .tab-contents-container > :nth-child(1) { animation-delay: 0.00s; }
-        .tab-contents-container > :nth-child(2) { animation-delay: 0.05s; }
-        .tab-contents-container > :nth-child(3) { animation-delay: 0.10s; }
-        .tab-contents-container > :nth-child(4) { animation-delay: 0.15s; }
-        .tab-contents-container > :nth-child(5) { animation-delay: 0.20s; }
-        
-        .feed-container > :nth-child(1) { animation-delay: 0.18s; }
-        .feed-container > :nth-child(2) { animation-delay: 0.23s; }
-        .feed-container > :nth-child(3) { animation-delay: 0.28s; }
-        .feed-container > :nth-child(4) { animation-delay: 0.33s; }
-        .feed-container > :nth-child(5) { animation-delay: 0.38s; }
-        .feed-container > :nth-child(6) { animation-delay: 0.43s; }
-        .feed-container > :nth-child(7) { animation-delay: 0.48s; }
-        .feed-container > :nth-child(8) { animation-delay: 0.53s; }
-        .feed-container > :nth-child(9) { animation-delay: 0.58s; }
-        .feed-container > :nth-child(10) { animation-delay: 0.63s; }
-        .feed-container > :nth-child(n+11) { animation-delay: 0.68s; }
+        .slide-from-left .feed-container > * { animation-name: waveInLeft; }
 
         @keyframes waveInRight {
             0% { opacity: 0; transform: translateX(120px); }
@@ -353,7 +328,6 @@
             0% { opacity: 0; transform: translateX(-120px); }
             100% { opacity: 1; transform: translateX(0); }
         }
-        /* ======================================================== */
 
         /* SECCIÓN HERO Y CARDS */
         .hero-section { margin-bottom: 25px; }
@@ -469,7 +443,6 @@
             font-size: 11px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s ease;
         }
         .btn-delete-admin {
             background: rgba(239, 68, 68, 0.2);
@@ -480,7 +453,6 @@
             font-size: 11px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s ease;
         }
 
         .card-tip { font-size: 12px; text-align: center; color: #94a3b8; margin: 12px 0 0 0; }
@@ -539,7 +511,7 @@
                 <span>Wondertech Store</span>
             </div>
 
-            <!-- Categorías para PC / Escritorio -->
+            <!-- Categorías para PC / Escritorio (Visible en Computadoras) -->
             <div class="store-nav-inline">
                 <div id="tab-service-btn" class="store-category-item" onclick="cambiarPestana('service')">
                     <span class="category-icon-box">💻</span>
@@ -565,7 +537,7 @@
         </div>
     </nav>
 
-    <!-- BARRA FLOTANTE INDEPENDIENTE PARA TELÉFONOS -->
+    <!-- BARRA FLOTANTE INDEPENDIENTE PARA TELÉFONOS (Solo Móvil) -->
     <div class="mobile-bottom-bar">
         <div id="m-tab-service-btn" class="mobile-nav-item" onclick="cambiarPestana('service')">
             <span class="mobile-icon">💻</span>
@@ -1011,11 +983,11 @@
             const direccion = nuevoIndex > categoriaActualIndex ? 'slide-from-right' : 'slide-from-left';
             categoriaActualIndex = nuevoIndex;
 
-            // Actualizar botones de PC
+            // Sincronizar botones de PC
             document.querySelectorAll('.store-category-item').forEach(b => b.classList.remove('active'));
             document.getElementById(`tab-${destino}-btn`)?.classList.add('active');
 
-            // Actualizar botones de la barra móvil independiente
+            // Sincronizar botones de la barra móvil
             document.querySelectorAll('.mobile-nav-item').forEach(b => b.classList.remove('active'));
             document.getElementById(`m-tab-${destino}-btn`)?.classList.add('active');
 
