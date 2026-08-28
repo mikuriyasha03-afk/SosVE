@@ -500,6 +500,7 @@
 </head>
 <body>
 
+    <!-- PANTALLA DE CARGA -->
     <div id="splash-screen">
         <div class="splash-logo-container">
             <img id="logo-splash-img" alt="Logo" class="splash-img-logo">
@@ -507,6 +508,7 @@
         </div>
     </div>
 
+    <!-- NAVBAR SUPERIOR -->
     <nav class="apple-nav">
         <div class="apple-nav-content">
             <div class="nav-brand-container" onclick="cambiarPestana('feed')">
@@ -514,6 +516,7 @@
                 <span>Wondertech Store</span>
             </div>
 
+            <!-- Categorías para PC -->
             <div class="store-nav-inline">
                 <div id="tab-service-btn" class="store-category-item" onclick="cambiarPestana('service')">
                     <span class="category-icon-box">💻</span>
@@ -539,6 +542,7 @@
         </div>
     </nav>
 
+    <!-- BARRA FLOTANTE INDEPENDIENTE PARA TELÉFONOS -->
     <div class="mobile-bottom-bar">
         <div id="m-tab-service-btn" class="mobile-nav-item" onclick="cambiarPestana('service')">
             <span class="mobile-icon">💻</span>
@@ -558,8 +562,10 @@
         </div>
     </div>
 
+    <!-- CONTENEDOR PRINCIPAL -->
     <div class="main-container">
 
+        <!-- SERVICIO -->
         <div id="contenido-service" class="tab-contents-container">
             <div class="hero-section"><h1 class="hero-title">Soporte Técnico. <span>Diagnóstico rápido y reparación profesional</span></h1></div>
             <div id="panel-personal-service" class="admin-panel" style="display:none;">
@@ -589,6 +595,7 @@
             <div id="lista-service" class="feed-container">Cargando...</div>
         </div>
 
+        <!-- PLACAS QR -->
         <div id="contenido-qr" class="tab-contents-container">
             <div class="hero-section"><h1 class="hero-title">Placas Inteligentes. <span>Seguridad para tus mascotas</span></h1></div>
             <div id="panel-personal-qr" class="admin-panel" style="display:none;">
@@ -618,6 +625,7 @@
             <div id="lista-qr" class="feed-container">Cargando...</div>
         </div>
 
+        <!-- NOTICIAS -->
         <div id="contenido-noticias" class="tab-contents-container">
             <div class="hero-section"><h1 class="hero-title">Noticias Tech. <span>Tendencias globales</span></h1></div>
             <div id="panel-personal-noticias" class="admin-panel" style="display:none;">
@@ -647,6 +655,7 @@
             <div id="lista-noticias" class="feed-container">Cargando noticias...</div>
         </div>
 
+        <!-- FEED GENERAL (INICIA ACTIVO CON ESPERA PENDING-LOAD) -->
         <div id="contenido-feed" class="tab-contents-container active pending-load">
             <div class="hero-section"><h1 class="hero-title">Wondertech. <span>Tecnología y seguridad</span></h1></div>
             <div id="panel-personal-feed" class="admin-panel" style="display:none;">
@@ -675,6 +684,7 @@
 
     </div>
 
+    <!-- MODALES -->
     <div id="modal-login" class="modal">
         <div class="modal-content">
             <span class="close-modal" onclick="cerrarModalLogin()">&times;</span>
@@ -695,10 +705,10 @@
         const ordenCategorias = ['service', 'qr', 'noticias', 'feed'];
         let categoriaActualIndex = 3; 
 
-        // --- SISTEMA DE AUDIO TIPO VIENTO SUAVE (VOLUMEN MÁS FUERTE Y ENFOCADO A AIRE) ---
+        // --- SISTEMA DE AUDIO TIPO VIENTO SUAVE (VOLUMEN MÁS FUERTE) ---
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-        // 1. Sonido de clic sutil tipo ráfaga de viento ligera (Más fuerte)
+        // 1. Sonido de clic sutil tipo ráfaga de viento ligera (Mucho más fuerte)
         function reproducirSonidoClick() {
             try {
                 if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -719,7 +729,7 @@
                 filter.Q.value = 1.0;
 
                 const gain = audioCtx.createGain();
-                gain.gain.setValueAtTime(0.18, audioCtx.currentTime); // Volumen incrementado
+                gain.gain.setValueAtTime(0.40, audioCtx.currentTime); // Volumen incrementado fuertemente
                 gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.08);
 
                 noise.connect(filter);
@@ -730,7 +740,7 @@
             } catch(e) { }
         }
 
-        // 2. Sonido de transición tipo viento calmado (breeze sweep más fuerte)
+        // 2. Sonido de transición tipo viento calmado (breeze sweep mucho más fuerte)
         function reproducirSonidoTransicion() {
             try {
                 if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -753,7 +763,7 @@
 
                 const gain = audioCtx.createGain();
                 gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
-                gain.gain.linearRampToValueAtTime(0.16, audioCtx.currentTime + 0.08); // Volumen incrementado
+                gain.gain.linearRampToValueAtTime(0.35, audioCtx.currentTime + 0.08); // Volumen incrementado fuertemente
                 gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.22);
 
                 noise.connect(filter);
@@ -764,7 +774,7 @@
             } catch(e) { }
         }
 
-        // 3. Sonido de entrada calmada (apertura de aire expansiva más fuerte)
+        // 3. Sonido de entrada calmada (apertura de aire expansiva mucho más fuerte)
         function reproducirSonidoEntrada() {
             try {
                 if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -787,7 +797,7 @@
 
                 const gain = audioCtx.createGain();
                 gain.gain.setValueAtTime(0.001, now);
-                gain.gain.linearRampToValueAtTime(0.20, now + 0.15); // Volumen incrementado notablemente
+                gain.gain.linearRampToValueAtTime(0.45, now + 0.15); // Volumen incrementado al máximo nivel cómodo
                 gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.45);
 
                 noise.connect(filter);
