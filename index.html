@@ -275,7 +275,7 @@
             .mobile-nav-item.active .mobile-text { color: #ffffff; font-weight: 700; }
         }
 
-        /* CONTENEDOR Y ANIMACIONES DE APARICIÓN ESCALONADA (FADE IN + OLA 1.2s) */
+        /* CONTENEDOR Y ANIMACIONES DE APARICIÓN ESCALONADA */
         .main-container {
             max-width: 850px;
             margin: 0 auto;
@@ -339,7 +339,7 @@
             100% { opacity: 1; transform: translateX(0); }
         }
 
-        /* ESTILOS DE SECCIONES Y CARDS (COMPACTOS EN PC) */
+        /* ESTILOS DE SECCIONES Y CARDS */
         .hero-section { margin-bottom: 20px; text-align: center; }
         .hero-title {
             font-size: 28px;
@@ -655,7 +655,7 @@
             <div id="lista-noticias" class="feed-container">Cargando noticias...</div>
         </div>
 
-        <!-- FEED GENERAL (INICIA ACTIVO CON ESPERA PENDING-LOAD) -->
+        <!-- FEED GENERAL -->
         <div id="contenido-feed" class="tab-contents-container active pending-load">
             <div class="hero-section"><h1 class="hero-title">Wondertech. <span>Tecnología y seguridad</span></h1></div>
             <div id="panel-personal-feed" class="admin-panel" style="display:none;">
@@ -705,10 +705,10 @@
         const ordenCategorias = ['service', 'qr', 'noticias', 'feed'];
         let categoriaActualIndex = 3; 
 
-        // --- SISTEMA DE AUDIO TIPO VIENTO SUAVE (VOLUMEN MÁS FUERTE) ---
+        // --- SISTEMA DE AUDIO TIPO VIENTO SUAVE (AL DOBLE DE VOLUMEN = 2x) ---
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-        // 1. Sonido de clic sutil tipo ráfaga de viento ligera (Mucho más fuerte)
+        // 1. Sonido de clic sutil (Ganancia duplicada a 0.80)
         function reproducirSonidoClick() {
             try {
                 if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -729,7 +729,7 @@
                 filter.Q.value = 1.0;
 
                 const gain = audioCtx.createGain();
-                gain.gain.setValueAtTime(0.40, audioCtx.currentTime); // Volumen incrementado fuertemente
+                gain.gain.setValueAtTime(0.80, audioCtx.currentTime); // Duplicado de 0.40 a 0.80
                 gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.08);
 
                 noise.connect(filter);
@@ -740,7 +740,7 @@
             } catch(e) { }
         }
 
-        // 2. Sonido de transición tipo viento calmado (breeze sweep mucho más fuerte)
+        // 2. Sonido de transición tipo viento (Ganancia duplicada a 0.70)
         function reproducirSonidoTransicion() {
             try {
                 if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -763,7 +763,7 @@
 
                 const gain = audioCtx.createGain();
                 gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
-                gain.gain.linearRampToValueAtTime(0.35, audioCtx.currentTime + 0.08); // Volumen incrementado fuertemente
+                gain.gain.linearRampToValueAtTime(0.70, audioCtx.currentTime + 0.08); // Duplicado de 0.35 a 0.70
                 gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.22);
 
                 noise.connect(filter);
@@ -774,7 +774,7 @@
             } catch(e) { }
         }
 
-        // 3. Sonido de entrada calmada (apertura de aire expansiva mucho más fuerte)
+        // 3. Sonido de entrada de pantalla (Ganancia duplicada a 0.90)
         function reproducirSonidoEntrada() {
             try {
                 if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -797,7 +797,7 @@
 
                 const gain = audioCtx.createGain();
                 gain.gain.setValueAtTime(0.001, now);
-                gain.gain.linearRampToValueAtTime(0.45, now + 0.15); // Volumen incrementado al máximo nivel cómodo
+                gain.gain.linearRampToValueAtTime(0.90, now + 0.15); // Duplicado de 0.45 a 0.90
                 gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.45);
 
                 noise.connect(filter);
@@ -814,7 +814,6 @@
                 splash.classList.add('splash-fade-out');
                 reproducirSonidoEntrada();
 
-                // DISPARA LA ANIMACIÓN EXACTAMENTE AL QUITAR EL SPLASH
                 const contenidoInicial = document.getElementById('contenido-feed');
                 if (contenidoInicial) {
                     contenidoInicial.classList.remove('pending-load');
