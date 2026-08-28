@@ -27,7 +27,7 @@
 
         .splash-logo-container {
             text-align: center;
-            animation: logoEntrance 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation: logoEntrance 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
         .splash-img-logo {
@@ -50,7 +50,7 @@
         }
 
         @keyframes logoEntrance {
-            0% { opacity: 0; transform: scale(0.9) translateY(20px); }
+            0% { opacity: 0; transform: scale(0.95) translateY(10px); }
             100% { opacity: 1; transform: scale(1) translateY(0); }
         }
 
@@ -274,7 +274,7 @@
             .mobile-nav-item.active .mobile-text { color: #ffffff; font-weight: 700; }
         }
 
-        /* CONTENEDOR Y ANIMACIONES DE ENTRADA LENTA CON EFECTO DE OLA (2 SEGUNDOS) */
+        /* CONTENEDOR Y ANIMACIONES DE APARICIÓN ESCALONADA (FADE IN + DESPLAZAMIENTO SUAVE DE ~1.2s) */
         .main-container {
             max-width: 1000px;
             margin: 0 auto;
@@ -286,39 +286,35 @@
         .tab-contents-container { display: none; }
         .tab-contents-container.active { display: block; }
 
-        /* Estado inicial oculto antes de que el splash desaparezca */
+        /* Estado inicial totalmente invisible */
         .tab-contents-container.active.pending-load > * {
             opacity: 0;
         }
 
-        /* Animación fluida de 2 segundos al activarse post-splash */
+        /* Animación limpia de aparición tipo Fade In + Ola (sin desenfoques lentos) de 1.2 segundos */
         .tab-contents-container.active.initial-load > * {
             opacity: 0;
-            animation: waveDropEffect 2.0s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation: cleanFadeWave 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
-        @keyframes waveDropEffect {
+        @keyframes cleanFadeWave {
             0% {
                 opacity: 0;
-                transform: scale(0.8) translateY(-50px);
-            }
-            75% {
-                opacity: 1;
-                transform: scale(1.02) translateY(6px);
+                transform: translateY(25px) scale(0.97);
             }
             100% {
                 opacity: 1;
-                transform: scale(1) translateY(0);
+                transform: translateY(0) scale(1);
             }
         }
 
-        /* Retardos escalonados para crear el EFECTO DE OLA fluido */
-        .tab-contents-container.active.initial-load > *:nth-child(1) { animation-delay: 0.1s; }
-        .tab-contents-container.active.initial-load > *:nth-child(2) { animation-delay: 0.25s; }
-        .tab-contents-container.active.initial-load > *:nth-child(3) { animation-delay: 0.4s; }
-        .tab-contents-container.active.initial-load > *:nth-child(4) { animation-delay: 0.55s; }
-        .tab-contents-container.active.initial-load > *:nth-child(5) { animation-delay: 0.7s; }
-        .tab-contents-container.active.initial-load > *:nth-child(n+6) { animation-delay: 0.85s; }
+        /* Retardos escalonados breves para marcar claramente la ola de aparición */
+        .tab-contents-container.active.initial-load > *:nth-child(1) { animation-delay: 0.05s; }
+        .tab-contents-container.active.initial-load > *:nth-child(2) { animation-delay: 0.12s; }
+        .tab-contents-container.active.initial-load > *:nth-child(3) { animation-delay: 0.19s; }
+        .tab-contents-container.active.initial-load > *:nth-child(4) { animation-delay: 0.26s; }
+        .tab-contents-container.active.initial-load > *:nth-child(5) { animation-delay: 0.33s; }
+        .tab-contents-container.active.initial-load > *:nth-child(n+6) { animation-delay: 0.4s; }
 
         /* ANIMACIONES LATERALES PARA CAMBIO DE PESTAÑAS NORMALES */
         .slide-from-right > *,
@@ -326,7 +322,7 @@
         .slide-from-right .feed-container > *,
         .slide-from-left .feed-container > * {
             opacity: 0;
-            animation-duration: 0.6s;
+            animation-duration: 0.5s;
             animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
             animation-fill-mode: both;
         }
@@ -335,12 +331,12 @@
         .slide-from-left > *, .slide-from-left .feed-container > * { animation-name: waveInLeft; }
 
         @keyframes waveInRight {
-            0% { opacity: 0; transform: translateX(100px); }
+            0% { opacity: 0; transform: translateX(40px); }
             100% { opacity: 1; transform: translateX(0); }
         }
 
         @keyframes waveInLeft {
-            0% { opacity: 0; transform: translateX(-100px); }
+            0% { opacity: 0; transform: translateX(-40px); }
             100% { opacity: 1; transform: translateX(0); }
         }
 
@@ -505,7 +501,6 @@
 </head>
 <body>
 
-    <!-- PANTALLA DE CARGA -->
     <div id="splash-screen">
         <div class="splash-logo-container">
             <img id="logo-splash-img" alt="Logo" class="splash-img-logo">
@@ -513,7 +508,6 @@
         </div>
     </div>
 
-    <!-- NAVBAR SUPERIOR -->
     <nav class="apple-nav">
         <div class="apple-nav-content">
             <div class="nav-brand-container" onclick="cambiarPestana('feed')">
@@ -521,7 +515,6 @@
                 <span>Wondertech Store</span>
             </div>
 
-            <!-- Categorías para PC -->
             <div class="store-nav-inline">
                 <div id="tab-service-btn" class="store-category-item" onclick="cambiarPestana('service')">
                     <span class="category-icon-box">💻</span>
@@ -547,7 +540,6 @@
         </div>
     </nav>
 
-    <!-- BARRA FLOTANTE INDEPENDIENTE PARA TELÉFONOS -->
     <div class="mobile-bottom-bar">
         <div id="m-tab-service-btn" class="mobile-nav-item" onclick="cambiarPestana('service')">
             <span class="mobile-icon">💻</span>
@@ -567,10 +559,8 @@
         </div>
     </div>
 
-    <!-- CONTENEDOR PRINCIPAL -->
     <div class="main-container">
 
-        <!-- SERVICIO -->
         <div id="contenido-service" class="tab-contents-container">
             <div class="hero-section"><h1 class="hero-title">Soporte Técnico. <span>Diagnóstico rápido y reparación profesional</span></h1></div>
             <div id="panel-personal-service" class="admin-panel" style="display:none;">
@@ -600,7 +590,6 @@
             <div id="lista-service" class="feed-container">Cargando...</div>
         </div>
 
-        <!-- PLACAS QR -->
         <div id="contenido-qr" class="tab-contents-container">
             <div class="hero-section"><h1 class="hero-title">Placas Inteligentes. <span>Seguridad para tus mascotas</span></h1></div>
             <div id="panel-personal-qr" class="admin-panel" style="display:none;">
@@ -630,7 +619,6 @@
             <div id="lista-qr" class="feed-container">Cargando...</div>
         </div>
 
-        <!-- NOTICIAS -->
         <div id="contenido-noticias" class="tab-contents-container">
             <div class="hero-section"><h1 class="hero-title">Noticias Tech. <span>Tendencias globales</span></h1></div>
             <div id="panel-personal-noticias" class="admin-panel" style="display:none;">
@@ -660,7 +648,6 @@
             <div id="lista-noticias" class="feed-container">Cargando noticias...</div>
         </div>
 
-        <!-- FEED GENERAL (INICIA ACTIVO CON ESPERA PENDING-LOAD) -->
         <div id="contenido-feed" class="tab-contents-container active pending-load">
             <div class="hero-section"><h1 class="hero-title">Wondertech. <span>Tecnología y seguridad</span></h1></div>
             <div id="panel-personal-feed" class="admin-panel" style="display:none;">
@@ -689,7 +676,6 @@
 
     </div>
 
-    <!-- MODALES -->
     <div id="modal-login" class="modal">
         <div class="modal-content">
             <span class="close-modal" onclick="cerrarModalLogin()">&times;</span>
@@ -710,31 +696,32 @@
         const ordenCategorias = ['service', 'qr', 'noticias', 'feed'];
         let categoriaActualIndex = 3; 
 
-        // --- SISTEMA DE AUDIO SECO (TIPO CLICK DE INTERFAZ / MECÁNICO) ---
+        // --- SISTEMA DE AUDIO TIPO VIENTO SUAVE (AIRY / BREEZE) ---
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-        // 1. Sonido de clic seco (para botones)
+        // 1. Sonido de clic sutil tipo ráfaga de viento ligera
         function reproducirSonidoClick() {
             try {
                 if (audioCtx.state === 'suspended') audioCtx.resume();
                 
-                const bufferSize = audioCtx.sampleRate * 0.025; // 25 milisegundos
+                const bufferSize = audioCtx.sampleRate * 0.08; 
                 const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
                 const data = buffer.getChannelData(0);
                 for (let i = 0; i < bufferSize; i++) {
-                    data[i] = Math.random() * 2 - 1;
+                    data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize);
                 }
 
                 const noise = audioCtx.createBufferSource();
                 noise.buffer = buffer;
 
                 const filter = audioCtx.createBiquadFilter();
-                filter.type = 'lowpass';
-                filter.frequency.value = 800; // Corte bajo para sonido plano/seco
+                filter.type = 'bandpass';
+                filter.frequency.value = 400; 
+                filter.Q.value = 1.2;
 
                 const gain = audioCtx.createGain();
-                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.025);
+                gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.08);
 
                 noise.connect(filter);
                 filter.connect(gain);
@@ -744,50 +731,71 @@
             } catch(e) { }
         }
 
-        // 2. Sonido de transición seco y sutil (para cambio de categorías)
+        // 2. Sonido de transición tipo viento calmado (breeze sweep)
         function reproducirSonidoTransicion() {
             try {
                 if (audioCtx.state === 'suspended') audioCtx.resume();
                 
-                const osc = audioCtx.createOscillator();
+                const bufferSize = audioCtx.sampleRate * 0.2; 
+                const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    data[i] = (Math.random() * 2 - 1) * Math.sin((i / bufferSize) * Math.PI);
+                }
+
+                const noise = audioCtx.createBufferSource();
+                noise.buffer = buffer;
+
+                const filter = audioCtx.createBiquadFilter();
+                filter.type = 'bandpass';
+                filter.frequency.setValueAtTime(300, audioCtx.currentTime);
+                filter.frequency.linearRampToValueAtTime(700, audioCtx.currentTime + 0.2);
+                filter.Q.value = 1.0;
+
                 const gain = audioCtx.createGain();
-                
-                osc.type = 'square';
-                osc.frequency.setValueAtTime(120, audioCtx.currentTime);
-                osc.frequency.setValueAtTime(80, audioCtx.currentTime + 0.03);
+                gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.07, audioCtx.currentTime + 0.08);
+                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.2);
 
-                gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.04);
-
-                osc.connect(gain);
+                noise.connect(filter);
+                filter.connect(gain);
                 gain.connect(audioCtx.destination);
 
-                osc.start();
-                osc.stop(audioCtx.currentTime + 0.04);
+                noise.start();
             } catch(e) { }
         }
 
-        // 3. Sonido de entrada seco (al abrir la app / quitar splash)
+        // 3. Sonido de entrada calmada (apertura tipo ráfaga de aire expansiva)
         function reproducirSonidoEntrada() {
             try {
                 if (audioCtx.state === 'suspended') audioCtx.resume();
                 
                 const now = audioCtx.currentTime;
-                const osc = audioCtx.createOscillator();
+                const bufferSize = audioCtx.sampleRate * 0.4; 
+                const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    data[i] = (Math.random() * 2 - 1) * Math.sin((i / bufferSize) * Math.PI);
+                }
+
+                const noise = audioCtx.createBufferSource();
+                noise.buffer = buffer;
+
+                const filter = audioCtx.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(250, now);
+                filter.frequency.linearRampToValueAtTime(600, now + 0.4);
+
                 const gain = audioCtx.createGain();
-                
-                osc.type = 'triangle';
-                osc.frequency.setValueAtTime(200, now);
-                osc.frequency.setValueAtTime(150, now + 0.06);
+                gain.gain.setValueAtTime(0.001, now);
+                gain.gain.linearRampToValueAtTime(0.09, now + 0.15);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.4);
 
-                gain.gain.setValueAtTime(0.08, now);
-                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
-
-                osc.connect(gain);
+                noise.connect(filter);
+                filter.connect(gain);
                 gain.connect(audioCtx.destination);
 
-                osc.start(now);
-                osc.stop(now + 0.06);
+                noise.start(now);
             } catch(e) { }
         }
 
@@ -1093,7 +1101,7 @@
                     method: 'DELETE',
                     headers: {
                         "apikey": SUPABASE_KEY,
-                    "Authorization": `Bearer ${tokenAdmin || SUPABASE_KEY}`
+                        "Authorization": `Bearer ${tokenAdmin || SUPABASE_KEY}`
                     }
                 });
 
