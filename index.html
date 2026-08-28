@@ -402,10 +402,9 @@
         .card-title { font-size: 19px; font-weight: 700; margin: 0 0 6px 0; letter-spacing: -0.01em; }
         .card-description { font-size: 14px; opacity: 0.8; margin: 0 0 16px 0; line-height: 1.5; }
         
-        /* CONTENEDOR DE IMAGEN */
+        /* CONTENEDOR DE IMAGEN (ACTUALIZADO PARA PC SIN CORTES) */
         .card-img-container {
             width: 100%;
-            max-height: 380px;
             border-radius: 12px;
             overflow: hidden;
             background: rgba(0,0,0,0.3);
@@ -416,8 +415,9 @@
         }
         .card-img-container img { 
             width: 100%; 
-            height: 100%; 
-            object-fit: contain; 
+            height: auto; 
+            max-height: 500px;
+            object-fit: contain; /* Evita que la imagen se corte en PC mostrando el 100% de la foto */
             display: block; 
             background: rgba(0,0,0,0.2);
         }
@@ -857,7 +857,7 @@
             document.getElementById(`form-contacto-${cat}`).value = "";
             document.getElementById(`form-foto-${cat}`).value = "";
             document.getElementById(`label-txt-${cat}`).innerText = "📷 Seleccionar imagen";
-            document.getElementById(`preview-service` + (cat === 'service' ? '' : `-${cat}`)).style.display = 'none'; // ocultar preview
+            document.getElementById(`preview-service` + (cat === 'service' ? '' : `-${cat}`)).style.display = 'none';
 
             const tituloForm = document.getElementById(`form-titulo-${cat}`);
             if(tituloForm) tituloForm.innerText = "Registrar Nuevo Elemento";
@@ -881,7 +881,7 @@
             document.getElementById(`form-nombre-${categoriaForm}`).value = item.nombre || "";
             document.getElementById(`form-detalles-${categoriaForm}`).value = item.detalles || "";
             document.getElementById(`form-contacto-${categoriaForm}`).value = item.contacto || "";
-            document.getElementById(`form-foto-${categoriaForm}`).value = ""; // Limpiar input file por si no cambia la foto
+            document.getElementById(`form-foto-${categoriaForm}`).value = "";
             
             const tituloForm = document.getElementById(`form-titulo-${categoriaForm}`);
             if(tituloForm) tituloForm.innerText = "✏️ Editar Publicación ID: " + id;
@@ -902,14 +902,10 @@
 
             let fotoUrlFinal = "";
 
-            // Si se seleccionó una nueva imagen, subirla a Supabase Storage
             if (inputFoto.files && inputFoto.files[0]) {
                 const archivo = inputFoto.files[0];
                 const nombreArchivo = `${Date.now()}_${archivo.name.replace(/\s+/g, '_')}`;
                 
-                const formData = new FormData();
-                formData.append('file', archivo);
-
                 try {
                     const uploadRes = await fetch(`${SUPABASE_URL}/storage/v1/object/fotos-reportes/${nombreArchivo}`, {
                         method: 'POST',
@@ -930,12 +926,10 @@
                 }
             }
 
-            // Si es edición y no se eligió nueva foto, conservar la foto anterior
             if (!fotoUrlFinal && id) {
                 const itemAnterior = cacheReportes.find(r => r.id == id);
                 if (itemAnterior) fotoUrlFinal = itemAnterior.foto;
             } else if (!fotoUrlFinal) {
-                // Imagen por defecto si es nueva y no se seleccionó archivo
                 fotoUrlFinal = "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80";
             }
 
