@@ -3,305 +3,654 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wondertech - Panel de Soluciones</title>
+    <title>Wondertech Technologies - Apple Glass Store</title>
     <style>
-        :root {
-            --bg-color: #0f172a;
-            --card-bg: rgba(30, 41, 59, 0.7);
-            --text-color: #f8fafc;
-            --accent-color: #38bdf8;
-            --border-color: rgba(255, 255, 255, 0.1);
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 0;
-            padding-bottom: 80px;
-        }
-
-        /* Splash Screen */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        /* PANTALLA DE CARGA APPLE STYLE */
         #splash-screen {
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: var(--bg-color);
+            width: 100vw;
+            height: 100vh;
+            background: #0b0f19;
+            z-index: 9999;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
-            z-index: 9999;
-            transition: opacity 0.5s ease;
+            justify-content: center;
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
         }
 
-        #splash-screen.splash-fade-out {
-            opacity: 0;
-            pointer-events: none;
+        .splash-logo-container {
+            text-align: center;
+            animation: logoEntrance 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
-        #logo-splash-img {
-            width: 100px;
-            height: 100px;
-            object-fit: cover;
+        .splash-img-logo {
+            width: 90px;
+            height: 90px;
             border-radius: 50%;
-            margin-bottom: 20px;
-            border: 2px solid var(--accent-color);
+            object-fit: cover;
+            margin-bottom: 15px;
+            border: 2px solid rgba(110, 231, 183, 0.4);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            background: rgba(255, 255, 255, 0.05);
         }
 
-        /* Navbar */
-        nav {
+        .splash-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #ffffff;
+            letter-spacing: -0.5px;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+        }
+
+        @keyframes logoEntrance {
+            0% { opacity: 0; transform: scale(0.9) translateY(20px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .splash-fade-out { opacity: 0 !important; visibility: hidden !important; }
+
+        /* CUERPO Y ESTILO GENERAL */
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            line-height: 1.47059; 
+            color: #f5f5f7; 
+            background: radial-gradient(circle at 50% -20%, #172554 0%, #030712 60%, #000000 100%);
+            min-height: 150vh; 
+            padding-bottom: 100px;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* BOTÓN UNIFICADO */
+        .glass-button {
+            background: rgba(52, 211, 153, 0.15);
+            border: 1px solid rgba(52, 211, 153, 0.4);
+            color: #34d399;
+            padding: 10px 18px;
+            border-radius: 980px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            -webkit-tap-highlight-color: transparent;
+            margin: 6px 4px;
+        }
+
+        .glass-button:hover, .glass-button:active {
+            background: rgba(52, 211, 153, 0.25);
+            border-color: rgba(52, 211, 153, 0.8);
+            color: #ffffff;
+            transform: translate(-3px, -4px) scale(1.03);
+            box-shadow: 0 8px 25px rgba(52, 211, 153, 0.3);
+        }
+
+        .glass-button.full-width { width: 100%; }
+
+        .glass-button.secondary {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.15);
+            color: #a1a1a6;
+        }
+
+        .glass-button.secondary:hover, .glass-button.secondary:active {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translate(-3px, -4px) scale(1.03);
+            box-shadow: 0 8px 25px rgba(255, 255, 255, 0.15);
+        }
+
+        /* NAVBAR SUPERIOR */
+        .apple-nav {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            padding: 0 20px;
+        }
+
+        .apple-nav-content {
+            max-width: 1024px;
+            width: 100%;
+            height: 76px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-brand-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: transform 0.2s ease;
+            padding: 4px;
+        }
+        .nav-brand-container:hover, .nav-brand-container:active {
+            transform: translate(-2px, -3px) scale(1.02);
+        }
+
+        .nav-brand-container img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1px solid rgba(110, 231, 183, 0.4);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* BARRA CENTRAL DE CATEGORÍAS (ESCRITORIO) */
+        .store-nav-inline {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            overflow-x: auto;
+            scrollbar-width: none;
+            padding: 8px 6px;
+        }
+        .store-nav-inline::-webkit-scrollbar { display: none; }
+
+        .store-category-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 8px 16px;
+            border-radius: 980px;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            white-space: nowrap;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .store-category-item:hover, .store-category-item:active { 
+            background: rgba(255, 255, 255, 0.1); 
+            border-color: rgba(255, 255, 255, 0.25);
+            transform: translate(-3px, -4px) scale(1.04);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .category-icon-box { font-size: 15px; }
+
+        .store-category-item.active {
+            border-color: rgba(52, 211, 153, 0.6);
+            background: rgba(52, 211, 153, 0.18);
+            box-shadow: 0 2px 10px rgba(52, 211, 153, 0.15);
+        }
+
+        .category-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #a1a1a6;
+        }
+
+        .store-category-item.active .category-label {
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        /* BARRA FLOTANTE INDEPENDIENTE PARA TELÉFONOS */
+        .mobile-bottom-bar { display: none; }
+
+        @media (max-width: 768px) {
+            .apple-nav .store-nav-inline { display: none; }
+
+            .mobile-bottom-bar {
+                display: flex;
+                position: fixed;
+                bottom: 16px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 92%;
+                max-width: 420px;
+                background: rgba(15, 23, 42, 0.9);
+                backdrop-filter: blur(25px) saturate(180%);
+                -webkit-backdrop-filter: blur(25px) saturate(180%);
+                border: 1px solid rgba(110, 231, 183, 0.3);
+                border-radius: 980px;
+                padding: 8px 12px;
+                justify-content: space-around;
+                align-items: center;
+                z-index: 999;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 10px rgba(255, 255, 255, 0.05);
+            }
+
+            .mobile-nav-item {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 2px;
+                cursor: pointer;
+                padding: 6px 10px;
+                border-radius: 980px;
+                transition: all 0.2s ease;
+                -webkit-tap-highlight-color: transparent;
+            }
+
+            .mobile-nav-item .mobile-icon { font-size: 18px; }
+            .mobile-nav-item .mobile-text { font-size: 10px; font-weight: 500; color: #a1a1a6; }
+
+            .mobile-nav-item.active {
+                background: rgba(52, 211, 153, 0.2);
+                border: 1px solid rgba(52, 211, 153, 0.4);
+            }
+
+            .mobile-nav-item.active .mobile-text { color: #ffffff; font-weight: 700; }
+        }
+
+        /* CONTENEDOR Y ANIMACIONES WAVE */
+        .main-container {
+            max-width: 1024px;
+            margin: 0 auto;
+            padding: 30px 20px 20px 20px;
+            overflow: hidden; 
+            position: relative;
+        }
+
+        .tab-contents-container { display: none; }
+        .tab-contents-container.active { display: block; }
+
+        .slide-from-right > *:not(.feed-container),
+        .slide-from-left > *:not(.feed-container),
+        .slide-from-right .feed-container > *,
+        .slide-from-left .feed-container > * {
+            opacity: 0;
+            animation-duration: 0.65s;
+            animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+            animation-fill-mode: both;
+        }
+
+        .slide-from-right > *:not(.feed-container), .slide-from-right .feed-container > * { animation-name: waveInRight; }
+        .slide-from-left > *:not(.feed-container), .slide-from-left .feed-container > * { animation-name: waveInLeft; }
+
+        @keyframes waveInRight {
+            0% { opacity: 0; transform: translateX(120px); }
+            100% { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes waveInLeft {
+            0% { opacity: 0; transform: translateX(-120px); }
+            100% { opacity: 1; transform: translateX(0); }
+        }
+
+        /* ESTILOS DE SECCIONES Y CARDS */
+        .hero-section { margin-bottom: 25px; }
+        .hero-title {
+            font-size: 38px;
+            line-height: 1.08349;
+            font-weight: 600;
+            letter-spacing: -0.003em;
+            color: #f5f5f7;
+            max-width: 700px;
+        }
+        .hero-title span { color: #86868b; }
+
+        .section-top-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px 25px;
-            background: rgba(15, 23, 42, 0.9);
-            border-bottom: 1px solid var(--border-color);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            backdrop-filter: blur(10px);
-        }
-
-        .nav-brand {
-            display: flex;
-            align-items: center;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
             gap: 12px;
         }
 
-        #logo-nav-img {
-            width: 40px;
-            height: 40px;
-            object-fit: cover;
-            border-radius: 50%;
+        .section-header-title {
+            font-size: 22px;
+            font-weight: 600;
+            letter-spacing: 0.009em;
+            color: #f5f5f7;
+            margin: 0;
         }
 
-        /* Categorías / Pestañas superiores */
-        .store-categories {
-            display: flex;
-            gap: 10px;
-            padding: 15px 25px;
-            overflow-x: auto;
-            background: rgba(30, 41, 59, 0.3);
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .store-category-item {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border-color);
-            color: var(--text-color);
-            padding: 8px 16px;
-            border-radius: 20px;
-            cursor: pointer;
-            white-space: nowrap;
-            transition: all 0.3s ease;
-        }
-
-        .store-category-item.active {
-            background: var(--accent-color);
-            color: #0f172a;
-            font-weight: bold;
-            border-color: var(--accent-color);
-        }
-
-        /* Contenedores de pestañas */
-        .tab-contents-container {
-            display: none;
-            padding: 20px;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .tab-contents-container.active {
-            display: block;
-        }
-
-        /* Tarjetas estilo Glassmorphism */
         .glass-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            margin-bottom: 20px;
+            position: relative;
+            width: 100%;
+            border-radius: 20px;
+            background: rgba(6, 78, 59, 0.18);
+            backdrop-filter: blur(20px) saturate(160%);
+            -webkit-backdrop-filter: blur(20px) saturate(160%);
+            border: 1px solid rgba(110, 231, 183, 0.2);
+            box-shadow: 0px 10px 30px 0 rgba(2, 44, 34, 0.25), inset 0px 0px 4px 2px rgba(255, 255, 255, 0.05);
             overflow: hidden;
-            backdrop-filter: blur(12px);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
         }
 
         .card-content {
-            padding: 20px;
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 24px;
+            color: white;
         }
 
         .card-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 16px;
         }
 
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .avatar img {
-            width: 45px;
-            height: 45px;
+        .user-info { display: flex; align-items: center; gap: 12px; }
+        .avatar {
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
-            object-fit: cover;
-            border: 1px solid var(--accent-color);
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #34d399;
+            overflow: hidden;
         }
+        .avatar img { width: 100%; height: 100%; object-fit: cover; }
 
-        .user-name {
-            font-weight: bold;
-            margin: 0;
-            font-size: 0.95rem;
-        }
+        .user-details { display: flex; flex-direction: column; }
+        .user-name { font-weight: 600; font-size: 14px; margin: 0; color: #fff; }
+        .user-role { font-size: 11px; opacity: 0.7; margin: 0; color: #34d399; text-transform: uppercase; }
 
-        .user-role {
-            font-size: 0.75rem;
-            color: var(--accent-color);
-            margin: 0;
-        }
-
-        .card-title {
-            font-size: 1.25rem;
-            margin: 0 0 10px 0;
-        }
-
-        .card-description {
-            color: #cbd5e1;
-            font-size: 0.95rem;
-            line-height: 1.5;
-            margin-bottom: 15px;
-        }
-
-        .card-img-container img {
+        .admin-actions { display: flex; gap: 6px; }
+        .card-body { text-align: left; margin-bottom: 16px; }
+        .card-title { font-size: 19px; font-weight: 700; margin: 0 0 6px 0; letter-spacing: -0.01em; }
+        .card-description { font-size: 14px; opacity: 0.8; margin: 0 0 16px 0; line-height: 1.5; }
+        
+        .card-img-container {
             width: 100%;
-            max-height: 350px;
-            object-fit: cover;
             border-radius: 12px;
-            margin-bottom: 15px;
+            overflow: hidden;
+            background: rgba(0,0,0,0.2);
+            margin-bottom: 16px;
+            max-height: 320px;
         }
+        .card-img-container img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
         .product-price-badge {
-            display: inline-block;
-            background: rgba(56, 189, 248, 0.1);
-            color: var(--accent-color);
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 0.9rem;
-            border: 1px solid rgba(56, 189, 248, 0.2);
-        }
-
-        .card-tip {
-            font-size: 0.75rem;
-            color: #94a3b8;
-            margin-top: 15px;
-            border-top: 1px solid var(--border-color);
-            padding-top: 10px;
-            text-align: right;
-        }
-
-        /* Barra de navegación inferior móvil */
-        .mobile-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
+            background: rgba(52, 211, 153, 0.15);
+            border: 1px solid rgba(52, 211, 153, 0.4);
+            color: #34d399;
+            padding: 10px 16px;
+            border-radius: 980px;
+            font-weight: 700;
+            font-size: 15px;
+            text-align: center;
             width: 100%;
-            background: rgba(15, 23, 42, 0.95);
-            border-top: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-around;
-            padding: 10px 0;
-            backdrop-filter: blur(10px);
-            z-index: 1000;
+            display: block;
+            backdrop-filter: blur(8px);
         }
 
-        .mobile-nav-item {
-            background: none;
-            border: none;
-            color: #94a3b8;
-            font-size: 0.8rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
+        .btn-edit-admin {
+            background: rgba(59, 130, 246, 0.2);
+            border: 1px solid rgba(59, 130, 246, 0.4);
+            color: #93c5fd;
+            padding: 6px 12px;
+            border-radius: 980px;
+            font-size: 11px;
+            font-weight: 600;
             cursor: pointer;
-            transition: color 0.3s;
+        }
+        .btn-delete-admin {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            color: #fca5a5;
+            padding: 6px 12px;
+            border-radius: 980px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
         }
 
-        .mobile-nav-item.active {
-            color: var(--accent-color);
+        .card-tip { font-size: 12px; text-align: center; color: #94a3b8; margin: 12px 0 0 0; }
+
+        .admin-panel, .form-box {
+            background: rgba(6, 78, 59, 0.25);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(110, 231, 183, 0.25);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 24px;
         }
+        .form-box { display: none; }
+
+        .input-group { margin-bottom: 16px; text-align: left; }
+        .input-group label { display: block; font-size: 12px; font-weight: 500; color: rgba(255, 255, 255, 0.8); margin-bottom: 6px; }
+        
+        input[type="text"], input[type="email"], input[type="password"], textarea, select { 
+            width: 100%; padding: 12px 14px; border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 12px; 
+            font-size: 14px; background: rgba(0, 0, 0, 0.3); color: #fff; outline: none; 
+        }
+        select option { background: #0b0f19; color: #fff; }
+        input:focus, textarea:focus, select:focus { border-color: #34d399; box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.2); }
+
+        .file-upload-wrapper { position: relative; margin-top: 4px; }
+        .file-upload-label { 
+            display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 12px; 
+            background: rgba(255, 255, 255, 0.05); border: 1px dashed rgba(255, 255, 255, 0.2); border-radius: 12px; cursor: pointer; font-size: 13px;
+        }
+        .file-upload-wrapper input[type="file"] { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+        .file-name-preview { font-size: 11px; color: #34d399; font-weight: 600; margin-top: 6px; display: none; }
+
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); backdrop-filter: blur(15px); overflow-y: auto; padding: 20px 0; }
+        .modal-content { 
+            background: rgba(13, 27, 23, 0.95); backdrop-filter: blur(30px); margin: 40px auto; padding: 24px; 
+            border-radius: 20px; max-width: 420px; width: 90%; border: 1px solid rgba(110, 231, 183, 0.3); color: #fff; position: relative; 
+        }
+        .close-modal { position: absolute; right: 16px; top: 14px; font-size: 20px; cursor: pointer; color: rgba(255,255,255,0.6); }
     </style>
 </head>
 <body>
 
-    <!-- Pantalla de Carga -->
+    <!-- PANTALLA DE CARGA -->
     <div id="splash-screen">
-        <img id="logo-splash-img" alt="Logo Carga">
-        <p>Cargando Wondertech...</p>
+        <div class="splash-logo-container">
+            <img id="logo-splash-img" alt="Logo" class="splash-img-logo">
+            <div class="splash-title">Wondertech Technologies</div>
+        </div>
     </div>
 
-    <!-- Barra Superior -->
-    <nav>
-        <div class="nav-brand">
-            <img id="logo-nav-img" alt="Logo Nav">
-            <span style="font-weight: bold; font-size: 1.1rem;">Wondertech</span>
-        </div>
-        <div>
-            <button onclick="abrirModalLogin()" style="background: var(--accent-color); border:none; padding: 6px 12px; border-radius: 8px; font-weight:bold; cursor:pointer;">Admin</button>
+    <!-- NAVBAR SUPERIOR -->
+    <nav class="apple-nav">
+        <div class="apple-nav-content">
+            <div class="nav-brand-container" onclick="cambiarPestana('feed')">
+                <img id="logo-nav-img" alt="Logo">
+                <span>Wondertech Store</span>
+            </div>
+
+            <!-- Categorías para PC -->
+            <div class="store-nav-inline">
+                <div id="tab-service-btn" class="store-category-item" onclick="cambiarPestana('service')">
+                    <span class="category-icon-box">💻</span>
+                    <span class="category-label">Servicio</span>
+                </div>
+                <div id="tab-qr-btn" class="store-category-item" onclick="cambiarPestana('qr')">
+                    <span class="category-icon-box">🏷️</span>
+                    <span class="category-label">Plaquitas</span>
+                </div>
+                <div id="tab-noticias-btn" class="store-category-item" onclick="cambiarPestana('noticias')">
+                    <span class="category-icon-box">📰</span>
+                    <span class="category-label">Noticias</span>
+                </div>
+                <div id="tab-feed-btn" class="store-category-item active" onclick="cambiarPestana('feed')">
+                    <span class="category-icon-box">🛍️</span>
+                    <span class="category-label">Catálogo</span>
+                </div>
+            </div>
+
+            <div>
+                <button id="btn-login-nav" class="glass-button secondary" style="padding: 8px 14px; font-size: 12px;" onclick="abrirModalLogin()">Acceso Admin</button>
+            </div>
         </div>
     </nav>
 
-    <!-- Pestañas Superiores -->
-    <div class="store-categories">
-        <button class="store-category-item" id="tab-service-btn" onclick="cambiarPestana('service')">Servicios</button>
-        <button class="store-category-item" id="tab-qr-btn" onclick="cambiarPestana('qr')">Placas QR</button>
-        <button class="store-category-item" id="tab-noticias-btn" onclick="cambiarPestana('noticias')">Noticias</button>
-        <button class="store-category-item active" id="tab-feed-btn" onclick="cambiarPestana('feed')">Todo el Feed</button>
-    </div>
-
-    <!-- Contenido de las Pestañas -->
-    <div id="contenido-service" class="tab-contents-container">
-        <div id="lista-service"></div>
-    </div>
-
-    <div id="contenido-qr" class="tab-contents-container">
-        <div id="lista-qr"></div>
-    </div>
-
-    <div id="contenido-noticias" class="tab-contents-container">
-        <div id="lista-noticias"></div>
-    </div>
-
-    <div id="contenido-feed" class="tab-contents-container active">
-        <div id="lista-feed"></div>
-    </div>
-
-    <!-- Barra Inferior Móvil -->
-    <div class="mobile-nav">
-        <button class="mobile-nav-item" id="m-tab-service-btn" onclick="cambiarPestana('service')">🛠️ Servicios</button>
-        <button class="mobile-nav-item" id="m-tab-qr-btn" onclick="cambiarPestana('qr')">🏷️ Placas QR</button>
-        <button class="mobile-nav-item" id="m-tab-noticias-btn" onclick="cambiarPestana('noticias')">📰 Noticias</button>
-        <button class="mobile-nav-item active" id="m-tab-feed-btn" onclick="cambiarPestana('feed')">🏠 Feed</button>
-    </div>
-
-    <!-- Modal Login Simple -->
-    <div id="modal-login" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:2000; justify-content:center; align-items:center;">
-        <div style="background:var(--bg-color); padding:20px; border-radius:12px; border:1px solid var(--border-color); width:300px; margin: 20vh auto;">
-            <h3>Acceso Administrativo</h3>
-            <p style="font-size:0.85rem; color:#94a3b8;">Función de prueba o login pendiente.</p>
-            <button onclick="cerrarModalLogin()" style="background:#ef4444; color:white; border:none; padding:8px 12px; border-radius:6px; cursor:pointer;">Cerrar</button>
+    <!-- BARRA FLOTANTE INDEPENDIENTE PARA TELÉFONOS -->
+    <div class="mobile-bottom-bar">
+        <div id="m-tab-service-btn" class="mobile-nav-item" onclick="cambiarPestana('service')">
+            <span class="mobile-icon">💻</span>
+            <span class="mobile-text">Servicio</span>
+        </div>
+        <div id="m-tab-qr-btn" class="mobile-nav-item" onclick="cambiarPestana('qr')">
+            <span class="mobile-icon">🏷️</span>
+            <span class="mobile-text">Plaquitas</span>
+        </div>
+        <div id="m-tab-noticias-btn" class="mobile-nav-item" onclick="cambiarPestana('noticias')">
+            <span class="mobile-icon">📰</span>
+            <span class="mobile-text">Noticias</span>
+        </div>
+        <div id="m-tab-feed-btn" class="mobile-nav-item active" onclick="cambiarPestana('feed')">
+            <span class="mobile-icon">🛍️</span>
+            <span class="mobile-text">Catálogo</span>
         </div>
     </div>
 
-    <!-- Script de conexión directa mediante Fetch (Evita bloqueos de caché y CORS/401 en PC) -->
+    <!-- CONTENEDOR PRINCIPAL -->
+    <div class="main-container">
+
+        <!-- SERVICIO -->
+        <div id="contenido-service" class="tab-contents-container">
+            <div class="hero-section"><h1 class="hero-title">Soporte Técnico. <span>Diagnóstico rápido y reparación profesional</span></h1></div>
+            <div id="panel-personal-service" class="admin-panel" style="display:none;">
+                <h3 style="margin-bottom: 14px; font-size:16px;">🛠️ Panel de Control</h3>
+                <button class="glass-button secondary full-width" onclick="cerrarSesion()">Cerrar Sesión</button>
+            </div>
+            <div id="formulario-ciudadano-service" class="form-box">
+                <h3 style="margin-bottom: 14px; font-size:16px;">Agregar Nuevo Servicio</h3>
+                <div class="input-group"><label>Título:</label><input type="text" id="form-nombre-service" placeholder="Ej: Título..."></div>
+                <div class="input-group"><label>Descripción:</label><textarea id="form-detalles-service" rows="3"></textarea></div>
+                <div class="input-group"><label>Precio:</label><input type="text" id="form-contacto-service" placeholder="Ej: $25.00"></div>
+                <div class="input-group">
+                    <label>Imagen:</label>
+                    <div class="file-upload-wrapper">
+                        <div class="file-upload-label">📷 Seleccionar imagen</div>
+                        <input type="file" id="form-foto-service" accept="image/*" onchange="mostrarNombreArchivo(this, 'preview-service')">
+                    </div>
+                </div>
+                <div id="preview-service" class="file-name-preview">✓ Imagen lista</div>
+                <button class="glass-button full-width" style="margin-top: 10px;" onclick="enviarReportePublico('service')">Publicar</button>
+            </div>
+            <div class="section-top-bar">
+                <h2 class="section-header-title">Soporte y Reparación</h2>
+                <button class="glass-button" onclick="abrirFormularioActivo('service')">➕ Registrar Servicio</button>
+            </div>
+            <div id="lista-service" class="feed-container">Cargando...</div>
+        </div>
+
+        <!-- PLACAS QR -->
+        <div id="contenido-qr" class="tab-contents-container">
+            <div class="hero-section"><h1 class="hero-title">Placas Inteligentes. <span>Seguridad para tus mascotas</span></h1></div>
+            <div id="panel-personal-qr" class="admin-panel" style="display:none;">
+                <h3 style="margin-bottom: 14px; font-size:16px;">🛠️ Panel de Control</h3>
+                <button class="glass-button secondary full-width" onclick="cerrarSesion()">Cerrar Sesión</button>
+            </div>
+            <div id="formulario-ciudadano-qr" class="form-box">
+                <h3 style="margin-bottom: 14px; font-size:16px;">Agregar Plaquita</h3>
+                <div class="input-group"><label>Título:</label><input type="text" id="form-nombre-qr"></div>
+                <div class="input-group"><label>Descripción:</label><textarea id="form-detalles-qr" rows="3"></textarea></div>
+                <div class="input-group"><label>Precio:</label><input type="text" id="form-contacto-qr"></div>
+                <div class="input-group">
+                    <label>Imagen:</label>
+                    <div class="file-upload-wrapper">
+                        <div class="file-upload-label">📷 Seleccionar imagen</div>
+                        <input type="file" id="form-foto-qr" accept="image/*" onchange="mostrarNombreArchivo(this, 'preview-qr')">
+                    </div>
+                </div>
+                <div id="preview-qr" class="file-name-preview">✓ Imagen lista</div>
+                <button class="glass-button full-width" style="margin-top: 10px;" onclick="enviarReportePublico('qr')">Publicar</button>
+            </div>
+            <div class="section-top-bar">
+                <h2 class="section-header-title">Placas Inteligentes con QR</h2>
+                <button class="glass-button" onclick="abrirFormularioActivo('qr')">➕ Agregar Plaquita</button>
+            </div>
+            <div id="lista-qr" class="feed-container">Cargando...</div>
+        </div>
+
+        <!-- NOTICIAS -->
+        <div id="contenido-noticias" class="tab-contents-container">
+            <div class="hero-section"><h1 class="hero-title">Noticias Tech. <span>Tendencias globales</span></h1></div>
+            <div id="panel-personal-noticias" class="admin-panel" style="display:none;">
+                <h3 style="margin-bottom: 14px; font-size:16px;">🛠️ Panel de Control</h3>
+                <button class="glass-button secondary full-width" onclick="cerrarSesion()">Cerrar Sesión</button>
+            </div>
+            <div id="formulario-ciudadano-noticias" class="form-box">
+                <h3 style="margin-bottom: 14px; font-size:16px;">Agregar Noticia</h3>
+                <div class="input-group"><label>Título:</label><input type="text" id="form-nombre-noticias"></div>
+                <div class="input-group"><label>Descripción:</label><textarea id="form-detalles-noticias" rows="3"></textarea></div>
+                <div class="input-group"><label>Precio / Nota:</label><input type="text" id="form-contacto-noticias"></div>
+                <div class="input-group">
+                    <label>Imagen:</label>
+                    <div class="file-upload-wrapper">
+                        <div class="file-upload-label">📷 Seleccionar imagen</div>
+                        <input type="file" id="form-foto-noticias" accept="image/*" onchange="mostrarNombreArchivo(this, 'preview-noticias')">
+                    </div>
+                </div>
+                <div id="preview-noticias" class="file-name-preview">✓ Imagen lista</div>
+                <button class="glass-button full-width" style="margin-top: 10px;" onclick="enviarReportePublico('noticias')">Publicar</button>
+            </div>
+            <div class="section-top-bar">
+                <h2 class="section-header-title">Noticias Tech</h2>
+                <button class="glass-button" onclick="abrirFormularioActivo('noticias')">➕ Agregar Noticia</button>
+            </div>
+            <div id="lista-noticias" class="feed-container">Cargando noticias...</div>
+        </div>
+
+        <!-- FEED GENERAL -->
+        <div id="contenido-feed" class="tab-contents-container active slide-from-right">
+            <div class="hero-section"><h1 class="hero-title">Wondertech. <span>Tecnología y seguridad</span></h1></div>
+            <div id="panel-personal-feed" class="admin-panel" style="display:none;">
+                <h3 style="margin-bottom: 14px; font-size:16px;">🛠️ Panel de Control</h3>
+                <button class="glass-button secondary full-width" onclick="cerrarSesion()">Cerrar Sesión</button>
+            </div>
+            <div id="formulario-ciudadano-feed" class="form-box">
+                <h3 style="margin-bottom: 14px; font-size:16px;">Agregar al Catálogo</h3>
+                <div class="input-group"><label>Título:</label><input type="text" id="form-nombre-feed"></div>
+                <div class="input-group"><label>Descripción:</label><textarea id="form-detalles-feed" rows="3"></textarea></div>
+                <div class="input-group"><label>Precio:</label><input type="text" id="form-contacto-feed"></div>
+                <div class="input-group">
+                    <label>Imagen:</label>
+                    <div class="file-upload-wrapper">
+                        <div class="file-upload-label">📷 Seleccionar imagen</div>
+                        <input type="file" id="form-foto-feed" accept="image/*" onchange="mostrarNombreArchivo(this, 'preview-feed')">
+                    </div>
+                </div>
+                <div id="preview-feed" class="file-name-preview">✓ Imagen lista</div>
+                <button class="glass-button full-width" style="margin-top: 10px;" onclick="enviarReportePublico('feed')">Publicar</button>
+            </div>
+            <h2 class="section-header-title" style="margin-bottom: 20px;">Lo último. Novedades.</h2>
+            <div id="lista-feed" class="feed-container">Cargando catálogo...</div>
+        </div>
+
+    </div>
+
+    <!-- MODALES -->
+    <div id="modal-login" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="cerrarModalLogin()">&times;</span>
+            <h4 style="text-align:center; margin-bottom:16px; font-size:16px;">Acceso de Taller</h4>
+            <div class="input-group"><input type="email" id="login-email" placeholder="Correo electrónico"></div>
+            <div class="input-group"><input type="password" id="login-password" placeholder="Contraseña"></div>
+            <button class="glass-button full-width" style="margin-top: 6px;" onclick="iniciarSesion()">Ingresar</button>
+        </div>
+    </div>
+
     <script>
         const SUPABASE_URL = "https://eiespojygliahqtjkkyd.supabase.co"; 
         const SUPABASE_KEY = "sb_publishable_TlydS60DSu5pDs6i9LwIPQ_zl00u_mR";
@@ -347,9 +696,7 @@
                     }
                 });
 
-                if (!response.ok) {
-                    throw new Error(`Error HTTP: ${response.status}`);
-                }
+                if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
 
                 cacheReportes = await response.json();
 
@@ -361,8 +708,8 @@
                 renderizarTodo();
             } catch (error) {
                 console.error("Error al cargar con fetch directo:", error);
-                document.querySelectorAll('.tab-contents-container div[id^="lista-"]').forEach(el => {
-                    el.innerHTML = "<p style='text-align:center; color:#fca5a5; padding: 20px;'>Error de conexión con Supabase. Revisa las políticas RLS.</p>";
+                document.querySelectorAll('.feed-container').forEach(el => {
+                    el.innerHTML = "<p style='text-align:center; color:#fca5a5; padding: 20px;'>Error al conectar con la base de datos.</p>";
                 });
             }
         }
@@ -446,6 +793,7 @@
             const nuevoIndex = ordenCategorias.indexOf(destino);
             if (nuevoIndex === -1) return;
 
+            const direccion = nuevoIndex > categoriaActualIndex ? 'slide-from-right' : 'slide-from-left';
             categoriaActualIndex = nuevoIndex;
 
             document.querySelectorAll('.store-category-item').forEach(b => b.classList.remove('active'));
@@ -455,17 +803,65 @@
             document.getElementById(`m-tab-${destino}-btn`)?.classList.add('active');
 
             document.querySelectorAll('.tab-contents-container').forEach(c => {
-                c.classList.remove('active');
+                c.classList.remove('active', 'slide-from-right', 'slide-from-left');
             });
 
             const contenidoSeleccionado = document.getElementById(`contenido-${destino}`);
             if (contenidoSeleccionado) {
-                contenidoSeleccionado.classList.add('active');
+                void contenidoSeleccionado.offsetWidth; 
+                contenidoSeleccionado.classList.add('active', direccion);
             }
         }
 
-        function abrirModalLogin() { document.getElementById('modal-login').style.display = 'flex'; }
+        function abrirFormularioActivo(cat) { 
+            const formBox = document.getElementById(`formulario-ciudadano-${cat}`);
+            if (formBox) formBox.style.display = 'block'; 
+            window.scrollTo({ top: 300, behavior: 'smooth' });
+        }
+
+        async function enviarReportePublico(cat) {
+            const nombre = document.getElementById(`form-nombre-${cat}`).value;
+            const detalles = document.getElementById(`form-detalles-${cat}`).value;
+            const contacto = document.getElementById(`form-contacto-${cat}`).value;
+
+            if(!nombre || !detalles) { alert("Completa los campos obligatorios."); return; }
+
+            const nuevoItem = {
+                nombre,
+                categoria: cat,
+                detalles,
+                contacto,
+                foto: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80",
+                autor_nombre: "Wondertech Cliente",
+                autor_avatar: `${SUPABASE_URL}/storage/v1/object/public/fotos-reportes/logo_principal.png`
+            };
+
+            await fetch(`${SUPABASE_URL}/rest/v1/reportes`, {
+                method: 'POST',
+                headers: {
+                    "apikey": SUPABASE_KEY,
+                    "Authorization": `Bearer ${SUPABASE_KEY}`,
+                    "Content-Type": "application/json",
+                    "Prefer": "return=minimal"
+                },
+                body: JSON.stringify(nuevoItem)
+            });
+
+            alert("Publicación agregada con éxito.");
+            location.reload();
+        }
+
+        function abrirModalLogin() { document.getElementById('modal-login').style.display = 'block'; }
         function cerrarModalLogin() { document.getElementById('modal-login').style.display = 'none'; }
+        function mostrarNombreArchivo(i, previewId) { if(i.files.length>0) document.getElementById(previewId).style.display='block'; }
+        
+        async function iniciarSesion() { 
+            alert("Función de inicio de sesión administrativo mediante fetch disponible próximamente.");
+            cerrarModalLogin();
+        }
+        async function cerrarSesion() { 
+            location.reload(); 
+        }
     </script>
 </body>
 </html>
