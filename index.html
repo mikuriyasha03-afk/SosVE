@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wondertech Technologies - Apple Glass Store</title>
-    <!-- Carga segura de Supabase con respaldo -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -65,7 +64,7 @@
             color: #f5f5f7; 
             background: radial-gradient(circle at 50% -20%, #172554 0%, #030712 60%, #000000 100%);
             min-height: 150vh; 
-            padding-bottom: 100px; /* Espacio extra para dispositivos móviles */
+            padding-bottom: 100px;
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
         }
@@ -219,20 +218,16 @@
             font-weight: 600;
         }
 
-        /* ========================================================
-           BARRA FLOTANTE INDEPENDIENTE PARA TELÉFONOS (MÓVIL)
-           ======================================================== */
+        /* BARRA FLOTANTE INDEPENDIENTE PARA TELÉFONOS */
         .mobile-bottom-bar {
-            display: none; /* Oculto por defecto en PC */
+            display: none;
         }
 
         @media (max-width: 768px) {
-            /* Ocultamos las categorías de la barra superior solo en celulares para limpiar espacio */
             .apple-nav .store-nav-inline {
                 display: none !important;
             }
 
-            /* Mostramos y posicionamos la barra independiente flotante inferior */
             .mobile-bottom-bar {
                 display: flex;
                 position: fixed;
@@ -285,7 +280,6 @@
                 font-weight: 700;
             }
         }
-        /* ======================================================== */
 
         /* EFECTO WAVE (OLA) */
         .main-container {
@@ -495,7 +489,6 @@
 </head>
 <body>
 
-    <!-- PANTALLA DE CARGA -->
     <div id="splash-screen">
         <div class="splash-logo-container">
             <img id="logo-splash-img" src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=200&q=80" alt="Logo" class="splash-img-logo" onerror="this.src='https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&h=100&q=80'">
@@ -503,7 +496,6 @@
         </div>
     </div>
 
-    <!-- NAVBAR SUPERIOR -->
     <nav class="apple-nav">
         <div class="apple-nav-content">
             <div class="nav-brand-container" onclick="cambiarPestana('feed')">
@@ -511,7 +503,6 @@
                 <span>Wondertech Store</span>
             </div>
 
-            <!-- Categorías para PC / Escritorio (Visible en Computadoras) -->
             <div class="store-nav-inline">
                 <div id="tab-service-btn" class="store-category-item" onclick="cambiarPestana('service')">
                     <span class="category-icon-box">💻</span>
@@ -537,7 +528,6 @@
         </div>
     </nav>
 
-    <!-- BARRA FLOTANTE INDEPENDIENTE PARA TELÉFONOS (Solo Móvil) -->
     <div class="mobile-bottom-bar">
         <div id="m-tab-service-btn" class="mobile-nav-item" onclick="cambiarPestana('service')">
             <span class="mobile-icon">💻</span>
@@ -557,10 +547,8 @@
         </div>
     </div>
 
-    <!-- CONTENEDOR PRINCIPAL -->
     <div class="main-container">
 
-        <!-- SERVICIO -->
         <div id="contenido-service" class="tab-contents-container">
             <div class="hero-section"><h1 class="hero-title">Soporte Técnico. <span>Diagnóstico rápido y reparación profesional</span></h1></div>
             <div id="panel-personal-service" class="admin-panel" style="display:none;">
@@ -597,7 +585,6 @@
             <div id="lista-service" class="feed-container">Cargando...</div>
         </div>
 
-        <!-- PLACAS QR -->
         <div id="contenido-qr" class="tab-contents-container">
             <div class="hero-section"><h1 class="hero-title">Placas Inteligentes. <span>Seguridad y conectividad para tus mascotas</span></h1></div>
             <div id="panel-personal-qr" class="admin-panel" style="display:none;">
@@ -634,7 +621,6 @@
             <div id="lista-qr" class="feed-container">Cargando...</div>
         </div>
 
-        <!-- NOTICIAS -->
         <div id="contenido-noticias" class="tab-contents-container">
             <div class="hero-section"><h1 class="hero-title">Noticias Tech. <span>Actualidad y tendencias tecnológicas globales</span></h1></div>
             <div id="panel-personal-noticias" class="admin-panel" style="display:none;">
@@ -671,7 +657,6 @@
             <div id="lista-noticias" class="feed-container">Cargando noticias...</div>
         </div>
 
-        <!-- FEED GENERAL -->
         <div id="contenido-feed" class="tab-contents-container active slide-from-right">
             <div class="hero-section"><h1 class="hero-title">Wondertech. <span>Tecnología, seguridad y cuidado en un solo lugar</span></h1></div>
             <div id="panel-personal-feed" class="admin-panel" style="display:none;">
@@ -707,7 +692,6 @@
 
     </div>
 
-    <!-- MODALES -->
     <div id="modal-login" class="modal">
         <div class="modal-content">
             <span class="close-modal" onclick="cerrarModalLogin()">&times;</span>
@@ -748,6 +732,7 @@
     </div>
 
     <script>
+        // Credenciales oficiales de Supabase configuradas
         const SUPABASE_URL = "https://eiespojygliahqtjkkyd.supabase.co"; 
         const SUPABASE_KEY = "sb_publishable_TlydS60DSu5pDs6i9LwIPQ_zl00u_mR";
         
@@ -983,11 +968,9 @@
             const direccion = nuevoIndex > categoriaActualIndex ? 'slide-from-right' : 'slide-from-left';
             categoriaActualIndex = nuevoIndex;
 
-            // Sincronizar botones de PC
             document.querySelectorAll('.store-category-item').forEach(b => b.classList.remove('active'));
             document.getElementById(`tab-${destino}-btn`)?.classList.add('active');
 
-            // Sincronizar botones de la barra móvil
             document.querySelectorAll('.mobile-nav-item').forEach(b => b.classList.remove('active'));
             document.getElementById(`m-tab-${destino}-btn`)?.classList.add('active');
 
