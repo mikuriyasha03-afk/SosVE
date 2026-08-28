@@ -7,7 +7,6 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
-        /* PANTALLA DE CARGA APPLE STYLE */
         #splash-screen {
             position: fixed;
             top: 0;
@@ -56,7 +55,6 @@
 
         .splash-fade-out { opacity: 0 !important; visibility: hidden !important; }
 
-        /* CUERPO Y ESTILO GENERAL (REDIMENSIONADO MÁS COMPACTO EN PC) */
         body { 
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
             line-height: 1.47059; 
@@ -69,7 +67,6 @@
             font-size: 13.5px;
         }
 
-        /* BOTÓN UNIFICADO */
         .glass-button {
             background: rgba(52, 211, 153, 0.15);
             border: 1px solid rgba(52, 211, 153, 0.4);
@@ -115,20 +112,6 @@
             box-shadow: 0 6px 20px rgba(255, 255, 255, 0.15);
         }
 
-        .glass-button.danger {
-            background: rgba(239, 68, 68, 0.15);
-            border-color: rgba(239, 68, 68, 0.4);
-            color: #fca5a5;
-        }
-
-        .glass-button.danger:hover {
-            background: rgba(239, 68, 68, 0.3);
-            border-color: rgba(239, 68, 68, 0.8);
-            color: #ffffff;
-            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.3);
-        }
-
-        /* NAVBAR SUPERIOR */
         .apple-nav {
             background: rgba(15, 23, 42, 0.85);
             backdrop-filter: blur(20px) saturate(180%);
@@ -175,7 +158,6 @@
             background: rgba(255, 255, 255, 0.05);
         }
 
-        /* BARRA CENTRAL DE CATEGORÍAS (ESCRITORIO) */
         .store-nav-inline {
             display: flex;
             gap: 8px;
@@ -226,7 +208,55 @@
             font-weight: 600;
         }
 
-        /* BARRA FLOTANTE INDEPENDIENTE PARA TELÉFONOS */
+        .config-dropdown-menu {
+            display: none;
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            width: 220px;
+            background: rgba(13, 27, 23, 0.95);
+            backdrop-filter: blur(25px) saturate(180%);
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
+            border: 1px solid rgba(110, 231, 183, 0.3);
+            border-radius: 14px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 10px rgba(255, 255, 255, 0.05);
+            padding: 8px;
+            z-index: 1000;
+            animation: menuFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes menuFadeIn {
+            0% { opacity: 0; transform: translateY(-8px) scale(0.96); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .config-dropdown-menu.active { display: block; }
+
+        .config-dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            font-size: 12px;
+            color: #f5f5f7;
+            font-weight: 500;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .config-dropdown-item:hover, .config-dropdown-item:active {
+            background: rgba(52, 211, 153, 0.2);
+            color: #ffffff;
+        }
+
+        .config-dropdown-divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 6px 0;
+        }
+
         .mobile-bottom-bar { display: none; }
 
         @media (max-width: 768px) {
@@ -275,7 +305,6 @@
             .mobile-nav-item.active .mobile-text { color: #ffffff; font-weight: 700; }
         }
 
-        /* CONTENEDOR Y ANIMACIONES DE APARICIÓN ESCALONADA */
         .main-container {
             max-width: 850px;
             margin: 0 auto;
@@ -286,60 +315,35 @@
 
         .tab-contents-container { display: none; }
         .tab-contents-container.active { display: block; }
-
-        /* Estado inicial totalmente invisible */
-        .tab-contents-container.active.pending-load > * {
-            opacity: 0;
-        }
-
+        .tab-contents-container.active.pending-load > * { opacity: 0; }
         .tab-contents-container.active.initial-load > * {
             opacity: 0;
             animation: cleanFadeWave 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
         @keyframes cleanFadeWave {
-            0% {
-                opacity: 0;
-                transform: translateY(20px) scale(0.98);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
+            0% { opacity: 0; transform: translateY(20px) scale(0.98); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
         }
 
-        .tab-contents-container.active.initial-load > *:nth-child(1) { animation-delay: 0.05s; }
-        .tab-contents-container.active.initial-load > *:nth-child(2) { animation-delay: 0.12s; }
-        .tab-contents-container.active.initial-load > *:nth-child(3) { animation-delay: 0.19s; }
-        .tab-contents-container.active.initial-load > *:nth-child(4) { animation-delay: 0.26s; }
-        .tab-contents-container.active.initial-load > *:nth-child(5) { animation-delay: 0.33s; }
-        .tab-contents-container.active.initial-load > *:nth-child(n+6) { animation-delay: 0.4s; }
-
-        /* ANIMACIONES LATERALES PARA CAMBIO DE PESTAÑAS NORMALES */
-        .slide-from-right > *,
-        .slide-from-left > *,
-        .slide-from-right .feed-container > *,
-        .slide-from-left .feed-container > * {
+        .slide-from-right > *, .slide-from-left > * {
             opacity: 0;
             animation-duration: 0.5s;
             animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
             animation-fill-mode: both;
         }
-
-        .slide-from-right > *, .slide-from-right .feed-container > * { animation-name: waveInRight; }
-        .slide-from-left > *, .slide-from-left .feed-container > * { animation-name: waveInLeft; }
+        .slide-from-right > * { animation-name: waveInRight; }
+        .slide-from-left > * { animation-name: waveInLeft; }
 
         @keyframes waveInRight {
             0% { opacity: 0; transform: translateX(30px); }
             100% { opacity: 1; transform: translateX(0); }
         }
-
         @keyframes waveInLeft {
             0% { opacity: 0; transform: translateX(-30px); }
             100% { opacity: 1; transform: translateX(0); }
         }
 
-        /* ESTILOS DE SECCIONES Y CARDS */
         .hero-section { margin-bottom: 20px; text-align: center; }
         .hero-title {
             font-size: 28px;
@@ -452,55 +456,51 @@
         }
 
         .admin-actions {
-            display: none;
+            display: flex;
             gap: 8px;
             margin-top: 12px;
             padding-top: 10px;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
-        .admin-actions.visible { display: flex; }
 
         .card-tip { font-size: 11px; text-align: center; color: #94a3b8; margin: 10px 0 0 0; }
 
-        .admin-panel, .form-box {
-            background: rgba(6, 78, 59, 0.25);
-            backdrop-filter: blur(25px);
-            border: 1px solid rgba(110, 231, 183, 0.25);
-            border-radius: 16px;
-            padding: 18px;
-            margin-bottom: 20px;
-        }
-        .form-box { display: none; }
-
-        .input-group { margin-bottom: 12px; text-align: left; }
-        .input-group label { display: block; font-size: 11px; font-weight: 500; color: rgba(255, 255, 255, 0.8); margin-bottom: 5px; }
-        
-        input[type="text"], input[type="email"], input[type="password"], textarea, select { 
-            width: 100%; padding: 10px 12px; border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 10px; 
-            font-size: 13px; background: rgba(0, 0, 0, 0.3); color: #fff; outline: none; 
-        }
-        select option { background: #0b0f19; color: #fff; }
-        input:focus, textarea:focus, select:focus { border-color: #34d399; box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.2); }
-
-        .file-upload-wrapper { position: relative; margin-top: 4px; }
-        .file-upload-label { 
-            display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; padding: 10px; 
-            background: rgba(255, 255, 255, 0.05); border: 1px dashed rgba(255, 255, 255, 0.2); border-radius: 10px; cursor: pointer; font-size: 12px;
-        }
-        .file-upload-wrapper input[type="file"] { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
-        .file-name-preview { font-size: 11px; color: #34d399; font-weight: 600; margin-top: 5px; display: none; }
-
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); backdrop-filter: blur(15px); overflow-y: auto; padding: 20px 0; }
+        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); backdrop-filter: blur(15px); overflow-y: auto; padding: 20px 0; }
         .modal-content { 
             background: rgba(13, 27, 23, 0.95); backdrop-filter: blur(30px); margin: 40px auto; padding: 20px; 
             border-radius: 16px; max-width: 380px; width: 90%; border: 1px solid rgba(110, 231, 183, 0.3); color: #fff; position: relative; 
         }
         .close-modal { position: absolute; right: 14px; top: 12px; font-size: 18px; cursor: pointer; color: rgba(255,255,255,0.6); }
+
+        .auth-tabs { display: flex; gap: 5px; margin-bottom: 14px; background: rgba(0,0,0,0.3); padding: 4px; border-radius: 10px; }
+        .auth-tab-btn { flex: 1; padding: 6px; font-size: 11px; font-weight: 600; border: none; background: transparent; color: #a1a1a6; cursor: pointer; border-radius: 8px; transition: all 0.2s; }
+        .auth-tab-btn.active { background: rgba(52, 211, 153, 0.2); color: #34d399; }
+        .auth-form-section { display: none; }
+        .auth-form-section.active { display: block; }
+
+        .input-group { margin-bottom: 12px; text-align: left; }
+        input[type="email"], input[type="password"], input[type="text"], input[type="number"], select { 
+            width: 100%; padding: 10px 12px; border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 10px; 
+            font-size: 13px; background: rgba(0, 0, 0, 0.3); color: #fff; outline: none; 
+        }
+        input:focus, select:focus { border-color: #34d399; box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.2); }
+
+        .inline-warning-box {
+            display: none;
+            background: rgba(245, 158, 11, 0.15);
+            border: 1px solid rgba(245, 158, 11, 0.4);
+            color: #fbbf24;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 11.5px;
+            line-height: 1.4;
+            margin-bottom: 12px;
+            text-align: left;
+        }
     </style>
 </head>
 <body>
 
-    <!-- PANTALLA DE CARGA -->
     <div id="splash-screen">
         <div class="splash-logo-container">
             <img id="logo-splash-img" alt="Logo" class="splash-img-logo">
@@ -508,7 +508,6 @@
         </div>
     </div>
 
-    <!-- NAVBAR SUPERIOR -->
     <nav class="apple-nav">
         <div class="apple-nav-content">
             <div class="nav-brand-container" onclick="cambiarPestana('feed')">
@@ -516,7 +515,6 @@
                 <span>Wondertech Store</span>
             </div>
 
-            <!-- Categorías para PC -->
             <div class="store-nav-inline">
                 <div id="tab-service-btn" class="store-category-item" onclick="cambiarPestana('service')">
                     <span class="category-icon-box">💻</span>
@@ -536,13 +534,28 @@
                 </div>
             </div>
 
-            <div>
-                <button id="btn-login-nav" class="glass-button secondary" style="padding: 6px 12px; font-size: 11px;" onclick="abrirModalLogin()">Acceso Admin</button>
+            <div style="position: relative;">
+                <button id="btn-login-nav" class="glass-button secondary" style="padding: 6px 12px; font-size: 11px;" onclick="toggleConfigMenu(event)">⚙️ Cuenta</button>
+
+                <div id="config-dropdown" class="config-dropdown-menu">
+                    <div id="menu-item-login" class="config-dropdown-item" onclick="abrirModalConfigDesdeLista()">
+                        <span>👤</span> <span id="label-auth-menu">Iniciar Sesión / Registrarse</span>
+                    </div>
+                    <div class="config-dropdown-item" onclick="abrirCarrito()">
+                        <span>🛒</span> <span>Mi Carrito</span>
+                    </div>
+                    <div class="config-dropdown-item" onclick="abrirHistorial()">
+                        <span>📦</span> <span>Historial de Compras</span>
+                    </div>
+                    <div class="config-dropdown-divider"></div>
+                    <div id="menu-item-logout" class="config-dropdown-item" onclick="cerrarSesion(); toggleConfigMenu();" style="color: #fca5a5; display: none;">
+                        <span>🚪</span> <span>Cerrar Sesión</span>
+                    </div>
+                </div>
             </div>
         </div>
     </nav>
 
-    <!-- BARRA FLOTANTE INDEPENDIENTE PARA TELÉFONOS -->
     <div class="mobile-bottom-bar">
         <div id="m-tab-service-btn" class="mobile-nav-item" onclick="cambiarPestana('service')">
             <span class="mobile-icon">💻</span>
@@ -562,136 +575,121 @@
         </div>
     </div>
 
-    <!-- CONTENEDOR PRINCIPAL -->
     <div class="main-container">
-
-        <!-- SERVICIO -->
         <div id="contenido-service" class="tab-contents-container">
             <div class="hero-section"><h1 class="hero-title">Soporte Técnico. <span>Diagnóstico rápido y reparación profesional</span></h1></div>
-            <div id="panel-personal-service" class="admin-panel" style="display:none;">
-                <h3 style="margin-bottom: 12px; font-size:14px;">🛠️ Panel de Control</h3>
-                <button class="glass-button secondary full-width" onclick="cerrarSesion()">Cerrar Sesión</button>
-            </div>
-            <div id="formulario-ciudadano-service" class="form-box">
-                <h3 style="margin-bottom: 12px; font-size:14px;" id="form-titulo-service">Agregar Nuevo Servicio</h3>
-                <input type="hidden" id="form-id-service">
-                <div class="input-group"><label>Título:</label><input type="text" id="form-nombre-service" placeholder="Ej: Título..."></div>
-                <div class="input-group"><label>Descripción:</label><textarea id="form-detalles-service" rows="2"></textarea></div>
-                <div class="input-group"><label>Precio:</label><input type="text" id="form-contacto-service" placeholder="Ej: $25.00"></div>
-                <div class="input-group">
-                    <label>Imagen:</label>
-                    <div class="file-upload-wrapper">
-                        <div class="file-upload-label" id="label-txt-service">📷 Seleccionar imagen</div>
-                        <input type="file" id="form-foto-service" accept="image/*" onchange="mostrarNombreArchivo(this, 'preview-service', 'label-txt-service')">
-                    </div>
-                </div>
-                <div id="preview-service" class="file-name-preview">✓ Imagen seleccionada</div>
-                <button class="glass-button full-width" style="margin-top: 8px;" onclick="guardarPublicacion('service')">Guardar Publicación</button>
-            </div>
-            <div class="section-top-bar">
-                <h2 class="section-header-title">Soporte y Reparación</h2>
-                <button class="glass-button" onclick="abrirFormularioActivo('service')">➕ Registrar Servicio</button>
-            </div>
+            <div class="section-top-bar"><h2 class="section-header-title">Soporte y Reparación</h2></div>
             <div id="lista-service" class="feed-container">Cargando...</div>
         </div>
 
-        <!-- PLACAS QR -->
         <div id="contenido-qr" class="tab-contents-container">
             <div class="hero-section"><h1 class="hero-title">Placas Inteligentes. <span>Seguridad para tus mascotas</span></h1></div>
-            <div id="panel-personal-qr" class="admin-panel" style="display:none;">
-                <h3 style="margin-bottom: 12px; font-size:14px;">🛠️ Panel de Control</h3>
-                <button class="glass-button secondary full-width" onclick="cerrarSesion()">Cerrar Sesión</button>
-            </div>
-            <div id="formulario-ciudadano-qr" class="form-box">
-                <h3 style="margin-bottom: 12px; font-size:14px;" id="form-titulo-qr">Agregar Plaquita</h3>
-                <input type="hidden" id="form-id-qr">
-                <div class="input-group"><label>Título:</label><input type="text" id="form-nombre-qr"></div>
-                <div class="input-group"><label>Descripción:</label><textarea id="form-detalles-qr" rows="2"></textarea></div>
-                <div class="input-group"><label>Precio:</label><input type="text" id="form-contacto-qr"></div>
-                <div class="input-group">
-                    <label>Imagen:</label>
-                    <div class="file-upload-wrapper">
-                        <div class="file-upload-label" id="label-txt-qr">📷 Seleccionar imagen</div>
-                        <input type="file" id="form-foto-qr" accept="image/*" onchange="mostrarNombreArchivo(this, 'preview-qr', 'label-txt-qr')">
-                    </div>
-                </div>
-                <div id="preview-qr" class="file-name-preview">✓ Imagen seleccionada</div>
-                <button class="glass-button full-width" style="margin-top: 8px;" onclick="guardarPublicacion('qr')">Guardar Publicación</button>
-            </div>
-            <div class="section-top-bar">
-                <h2 class="section-header-title">Placas Inteligentes con QR</h2>
-                <button class="glass-button" onclick="abrirFormularioActivo('qr')">➕ Agregar Plaquita</button>
-            </div>
+            <div class="section-top-bar"><h2 class="section-header-title">Placas Inteligentes con QR</h2></div>
             <div id="lista-qr" class="feed-container">Cargando...</div>
         </div>
 
-        <!-- NOTICIAS -->
         <div id="contenido-noticias" class="tab-contents-container">
             <div class="hero-section"><h1 class="hero-title">Noticias Tech. <span>Tendencias globales</span></h1></div>
-            <div id="panel-personal-noticias" class="admin-panel" style="display:none;">
-                <h3 style="margin-bottom: 12px; font-size:14px;">🛠️ Panel de Control</h3>
-                <button class="glass-button secondary full-width" onclick="cerrarSesion()">Cerrar Sesión</button>
-            </div>
-            <div id="formulario-ciudadano-noticias" class="form-box">
-                <h3 style="margin-bottom: 12px; font-size:14px;" id="form-titulo-noticias">Agregar Noticia</h3>
-                <input type="hidden" id="form-id-noticias">
-                <div class="input-group"><label>Título:</label><input type="text" id="form-nombre-noticias"></div>
-                <div class="input-group"><label>Descripción:</label><textarea id="form-detalles-noticias" rows="2"></textarea></div>
-                <div class="input-group"><label>Precio / Nota:</label><input type="text" id="form-contacto-noticias"></div>
-                <div class="input-group">
-                    <label>Imagen:</label>
-                    <div class="file-upload-wrapper">
-                        <div class="file-upload-label" id="label-txt-noticias">📷 Seleccionar imagen</div>
-                        <input type="file" id="form-foto-noticias" accept="image/*" onchange="mostrarNombreArchivo(this, 'preview-noticias', 'label-txt-noticias')">
-                    </div>
-                </div>
-                <div id="preview-noticias" class="file-name-preview">✓ Imagen seleccionada</div>
-                <button class="glass-button full-width" style="margin-top: 8px;" onclick="guardarPublicacion('noticias')">Guardar Publicación</button>
-            </div>
-            <div class="section-top-bar">
-                <h2 class="section-header-title">Noticias Tech</h2>
-                <button class="glass-button" onclick="abrirFormularioActivo('noticias')">➕ Agregar Noticia</button>
-            </div>
+            <div class="section-top-bar"><h2 class="section-header-title">Noticias Tech</h2></div>
             <div id="lista-noticias" class="feed-container">Cargando noticias...</div>
         </div>
 
-        <!-- FEED GENERAL -->
         <div id="contenido-feed" class="tab-contents-container active pending-load">
             <div class="hero-section"><h1 class="hero-title">Wondertech. <span>Tecnología y seguridad</span></h1></div>
-            <div id="panel-personal-feed" class="admin-panel" style="display:none;">
-                <h3 style="margin-bottom: 12px; font-size:14px;">🛠️ Panel de Control</h3>
-                <button class="glass-button secondary full-width" onclick="cerrarSesion()">Cerrar Sesión</button>
-            </div>
-            <div id="formulario-ciudadano-feed" class="form-box">
-                <h3 style="margin-bottom: 12px; font-size:14px;" id="form-titulo-feed">Agregar al Catálogo</h3>
-                <input type="hidden" id="form-id-feed">
-                <div class="input-group"><label>Título:</label><input type="text" id="form-nombre-feed"></div>
-                <div class="input-group"><label>Descripción:</label><textarea id="form-detalles-feed" rows="2"></textarea></div>
-                <div class="input-group"><label>Precio:</label><input type="text" id="form-contacto-feed"></div>
-                <div class="input-group">
-                    <label>Imagen:</label>
-                    <div class="file-upload-wrapper">
-                        <div class="file-upload-label" id="label-txt-feed">📷 Seleccionar imagen</div>
-                        <input type="file" id="form-foto-feed" accept="image/*" onchange="mostrarNombreArchivo(this, 'preview-feed', 'label-txt-feed')">
-                    </div>
-                </div>
-                <div id="preview-feed" class="file-name-preview">✓ Imagen seleccionada</div>
-                <button class="glass-button full-width" style="margin-top: 8px;" onclick="guardarPublicacion('feed')">Guardar Publicación</button>
-            </div>
             <h2 class="section-header-title" style="margin-bottom: 16px;">Lo último. Novedades.</h2>
             <div id="lista-feed" class="feed-container">Cargando catálogo...</div>
         </div>
-
     </div>
 
-    <!-- MODALES -->
     <div id="modal-login" class="modal">
         <div class="modal-content">
-            <span class="close-modal" onclick="cerrarModalLogin()">&times;</span>
-            <h4 style="text-align:center; margin-bottom:14px; font-size:15px;">Acceso de Taller</h4>
-            <div class="input-group"><input type="email" id="login-email" placeholder="Correo electrónico"></div>
-            <div class="input-group"><input type="password" id="login-password" placeholder="Contraseña"></div>
-            <button class="glass-button full-width" style="margin-top: 4px;" onclick="iniciarSesion()">Ingresar</button>
+            <span class="close-modal" onclick="cerrarModalConfig()">&times;</span>
+            <h4 style="text-align:center; margin-bottom:10px; font-size:15px;">🔐 Cuenta de Usuario</h4>
+            
+            <div class="auth-tabs">
+                <button id="tab-btn-login" class="auth-tab-btn active" onclick="cambiarAuthTab('login')">Iniciar Sesión</button>
+                <button id="tab-btn-register" class="auth-tab-btn" onclick="cambiarAuthTab('register')">Crear Cuenta</button>
+            </div>
+
+            <div id="auth-section-login" class="auth-form-section active">
+                <div id="login-warning-box" class="inline-warning-box"></div>
+                <div class="input-group"><input type="email" id="login-email" placeholder="Correo electrónico"></div>
+                <div class="input-group"><input type="password" id="login-password" placeholder="Contraseña"></div>
+                <button class="glass-button full-width" style="margin-top: 4px;" onclick="iniciarSesion()">Entrar</button>
+            </div>
+
+            <div id="auth-section-register" class="auth-form-section">
+                <div id="reg-warning-box" class="inline-warning-box"></div>
+                <p style="font-size: 11px; opacity: 0.7; text-align: center; margin-bottom: 10px;">Crea tu cuenta gratis para acceder al carrito e historial.</p>
+                <div class="input-group"><input type="email" id="reg-email" placeholder="Correo electrónico"></div>
+                <div class="input-group"><input type="password" id="reg-password" placeholder="Contraseña (mínimo 6 caracteres)"></div>
+                <button class="glass-button full-width" style="margin-top: 4px;" onclick="registrarUsuario()">Registrarse</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE CARRITO Y PAGO MÓVIL INTEGRADO -->
+    <div id="modal-carrito" class="modal">
+        <div class="modal-content" style="max-width: 440px;">
+            <span class="close-modal" onclick="cerrarModalCarrito()">&times;</span>
+            
+            <!-- VISTA 1: LISTA DEL CARRITO -->
+            <div id="cartView">
+                <h4 style="text-align:center; margin-bottom:14px; font-size:15px;">🛒 Tu Carrito de Compras</h4>
+                <div id="contenido-carrito-items" style="max-height: 250px; overflow-y: auto; margin-bottom: 12px; font-size: 12px;">
+                    <p style="text-align:center; opacity:0.6;">El carrito está vacío.</p>
+                </div>
+                <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px; margin-bottom: 14px; display: flex; justify-content: space-between; font-weight: bold;">
+                    <span>Total USD:</span>
+                    <span id="cart-total" style="color: #34d399;">$0.00</span>
+                </div>
+                <button class="glass-button full-width" onclick="irAlCheckout()">Proceder al Pago Móvil</button>
+            </div>
+
+            <!-- VISTA 2: FORMULARIO DE PAGO MÓVIL (SUPABASE order_payments) -->
+            <div id="checkoutView" style="display: none;">
+                <h4 style="text-align:center; margin-bottom:10px; font-size:15px;">💳 Reportar Pago Móvil</h4>
+                <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; margin-bottom: 12px; font-size: 11.5px; color: #d1d5db;">
+                    <p style="margin: 0 0 3px 0;"><strong>Banco:</strong> Banco Venezolano del Crédito</p>
+                    <p style="margin: 0 0 3px 0;"><strong>Teléfono:</strong> 04144189381</p>
+                    <p style="margin: 0;"><strong>Cédula:</strong> 34.790.741</p>
+                </div>
+
+                <form id="paymentForm" onsubmit="enviarPagoMovil(event)">
+                    <div class="input-group">
+                        <label style="font-size:11px; color:#a1a1a6; display:block; margin-bottom:4px;">NÚMERO DE ORDEN / FACTURA</label>
+                        <input type="text" id="invoiceNumber" readonly style="font-weight:bold; color:#34d399; background: rgba(0, 0, 0, 0.4);">
+                    </div>
+                    <div class="input-group">
+                        <input type="text" id="customerName" required placeholder="Tu Nombre Completo">
+                    </div>
+                    <div class="input-group">
+                        <input type="text" id="customerPhone" required placeholder="Tu Teléfono (Ej. 04121234567)">
+                    </div>
+                    <div class="input-group">
+                        <input type="text" id="referenceNumber" required placeholder="Últimos 4 dígitos o Referencia">
+                    </div>
+                    <div class="input-group">
+                        <input type="text" inputmode="decimal" id="amount" required placeholder="Monto en Bolívares (Bs.)">
+                    </div>
+
+                    <div style="display: flex; gap: 8px; margin-top: 10px;">
+                        <button type="button" class="glass-button secondary" style="width: 40%; margin:0;" onclick="regresarAlCarrito()">Atrás</button>
+                        <button type="submit" id="submitPaymentBtn" class="glass-button full-width" style="width: 60%; margin:0;">Enviar Reporte</button>
+                    </div>
+                </form>
+                <p id="responseMessage" style="text-align: center; margin-top: 10px; font-size: 12px;"></p>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-historial" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="cerrarModalHistorial()">&times;</span>
+            <h4 style="text-align:center; margin-bottom:14px; font-size:15px;">📦 Historial de Compras</h4>
+            <div id="contenido-historial-items" style="max-height: 250px; overflow-y: auto; font-size: 12px;">
+                <p style="text-align:center; opacity:0.6;">No tienes compras registradas.</p>
+            </div>
         </div>
     </div>
 
@@ -699,86 +697,70 @@
         const SUPABASE_URL = "https://eiespojygliahqtjkkyd.supabase.co"; 
         const SUPABASE_KEY = "sb_publishable_TlydS60DSu5pDs6i9LwIPQ_zl00u_mR";
 
-        let usuarioLogueado = null;
-        let tokenAdmin = null;
+        let usuarioActual = null;
+        let carrito = [];
+        let historialCompras = [];
         let cacheReportes = [];
         const ordenCategorias = ['service', 'qr', 'noticias', 'feed'];
         let categoriaActualIndex = 3; 
 
-        // --- SISTEMA DE AUDIO TIPO VIENTO SUAVE (AL DOBLE DE VOLUMEN = 2x) ---
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-        // 1. Sonido de clic sutil (Ganancia duplicada a 0.80)
         function reproducirSonidoClick() {
             try {
                 if (audioCtx.state === 'suspended') audioCtx.resume();
-                
                 const bufferSize = audioCtx.sampleRate * 0.08; 
                 const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
                 const data = buffer.getChannelData(0);
                 for (let i = 0; i < bufferSize; i++) {
                     data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize);
                 }
-
                 const noise = audioCtx.createBufferSource();
                 noise.buffer = buffer;
-
                 const filter = audioCtx.createBiquadFilter();
                 filter.type = 'bandpass';
                 filter.frequency.value = 450; 
                 filter.Q.value = 1.0;
-
                 const gain = audioCtx.createGain();
-                gain.gain.setValueAtTime(0.80, audioCtx.currentTime); // Duplicado de 0.40 a 0.80
+                gain.gain.setValueAtTime(0.80, audioCtx.currentTime);
                 gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.08);
-
                 noise.connect(filter);
                 filter.connect(gain);
                 gain.connect(audioCtx.destination);
-
                 noise.start();
             } catch(e) { }
         }
 
-        // 2. Sonido de transición tipo viento (Ganancia duplicada a 0.70)
         function reproducirSonidoTransicion() {
             try {
                 if (audioCtx.state === 'suspended') audioCtx.resume();
-                
                 const bufferSize = audioCtx.sampleRate * 0.22; 
                 const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
                 const data = buffer.getChannelData(0);
                 for (let i = 0; i < bufferSize; i++) {
                     data[i] = (Math.random() * 2 - 1) * Math.sin((i / bufferSize) * Math.PI);
                 }
-
                 const noise = audioCtx.createBufferSource();
                 noise.buffer = buffer;
-
                 const filter = audioCtx.createBiquadFilter();
                 filter.type = 'bandpass';
                 filter.frequency.setValueAtTime(320, audioCtx.currentTime);
                 filter.frequency.linearRampToValueAtTime(750, audioCtx.currentTime + 0.22);
                 filter.Q.value = 0.9;
-
                 const gain = audioCtx.createGain();
                 gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
-                gain.gain.linearRampToValueAtTime(0.70, audioCtx.currentTime + 0.08); // Duplicado de 0.35 a 0.70
+                gain.gain.linearRampToValueAtTime(0.70, audioCtx.currentTime + 0.08);
                 gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.22);
-
                 noise.connect(filter);
                 filter.connect(gain);
                 gain.connect(audioCtx.destination);
-
                 noise.start();
             } catch(e) { }
         }
 
-        // 3. Sonido de entrada de pantalla (Ganancia duplicada a 0.90)
         function reproducirSonidoEntrada() {
             try {
                 if (audioCtx.state === 'suspended') audioCtx.resume();
-                
                 const now = audioCtx.currentTime;
                 const bufferSize = audioCtx.sampleRate * 0.45; 
                 const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
@@ -786,24 +768,19 @@
                 for (let i = 0; i < bufferSize; i++) {
                     data[i] = (Math.random() * 2 - 1) * Math.sin((i / bufferSize) * Math.PI);
                 }
-
                 const noise = audioCtx.createBufferSource();
                 noise.buffer = buffer;
-
                 const filter = audioCtx.createBiquadFilter();
                 filter.type = 'lowpass';
                 filter.frequency.setValueAtTime(280, now);
                 filter.frequency.linearRampToValueAtTime(650, now + 0.45);
-
                 const gain = audioCtx.createGain();
                 gain.gain.setValueAtTime(0.001, now);
-                gain.gain.linearRampToValueAtTime(0.90, now + 0.15); // Duplicado de 0.45 a 0.90
+                gain.gain.linearRampToValueAtTime(0.90, now + 0.15);
                 gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.45);
-
                 noise.connect(filter);
                 filter.connect(gain);
                 gain.connect(audioCtx.destination);
-
                 noise.start(now);
             } catch(e) { }
         }
@@ -813,7 +790,6 @@
             if (splash && !splash.classList.contains('splash-fade-out')) {
                 splash.classList.add('splash-fade-out');
                 reproducirSonidoEntrada();
-
                 const contenidoInicial = document.getElementById('contenido-feed');
                 if (contenidoInicial) {
                     contenidoInicial.classList.remove('pending-load');
@@ -825,6 +801,7 @@
 
         window.onload = async () => {
             try {
+                verificarSesionGuardada();
                 await cargarLogoPublicoGlobal();
                 await cargarContenidoDirecto();
             } catch (e) {
@@ -833,6 +810,63 @@
                 ocultarSplashForzado();
             }
         };
+
+        function verificarSesionGuardada() {
+            const savedEmail = localStorage.getItem('wt_user_email');
+            if (savedEmail) {
+                usuarioActual = savedEmail;
+                document.getElementById('label-auth-menu').innerText = savedEmail.split('@')[0];
+                document.getElementById('menu-item-logout').style.display = 'flex';
+            }
+        }
+
+        function toggleConfigMenu(e) {
+            if(e) e.stopPropagation();
+            reproducirSonidoClick();
+            const dropdown = document.getElementById('config-dropdown');
+            if (dropdown) dropdown.classList.toggle('active');
+        }
+
+        function abrirModalConfigDesdeLista() {
+            const dropdown = document.getElementById('config-dropdown');
+            if (dropdown) dropdown.classList.remove('active');
+            
+            if (usuarioActual) {
+                abrirModalConfig();
+                const warningBox = document.getElementById('login-warning-box');
+                warningBox.innerText = "ℹ️ Ya tienes sesión iniciada como: " + usuarioActual;
+                warningBox.style.display = 'block';
+            } else {
+                abrirModalConfig();
+            }
+        }
+
+        window.addEventListener('click', (e) => {
+            const dropdown = document.getElementById('config-dropdown');
+            const btn = document.getElementById('btn-login-nav');
+            if (dropdown && dropdown.classList.contains('active') && !dropdown.contains(e.target) && e.target !== btn) {
+                dropdown.classList.remove('active');
+            }
+        });
+
+        function cambiarAuthTab(tipo) {
+            reproducirSonidoClick();
+            document.getElementById('tab-btn-login').classList.remove('active');
+            document.getElementById('tab-btn-register').classList.remove('active');
+            document.getElementById('auth-section-login').classList.remove('active');
+            document.getElementById('auth-section-register').classList.remove('active');
+
+            document.getElementById('login-warning-box').style.display = 'none';
+            document.getElementById('reg-warning-box').style.display = 'none';
+
+            if(tipo === 'login') {
+                document.getElementById('tab-btn-login').classList.add('active');
+                document.getElementById('auth-section-login').classList.add('active');
+            } else {
+                document.getElementById('tab-btn-register').classList.add('active');
+                document.getElementById('auth-section-register').classList.add('active');
+            }
+        }
 
         async function cargarLogoPublicoGlobal() {
             const logoUrlFijo = `${SUPABASE_URL}/storage/v1/object/public/fotos-reportes/logo_principal.png?t=${Date.now()}`;
@@ -850,16 +884,12 @@
                         "Authorization": `Bearer ${SUPABASE_KEY}`
                     }
                 });
-
                 if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
-
                 cacheReportes = await response.json();
-
                 if (!cacheReportes || cacheReportes.length === 0) {
                     await inyectarDatosPruebaFetch();
                     return;
                 }
-
                 renderizarTodo();
             } catch (error) {
                 console.error("Error al cargar con fetch directo:", error);
@@ -890,7 +920,6 @@
                     autor_avatar: `${SUPABASE_URL}/storage/v1/object/public/fotos-reportes/logo_principal.png`
                 }
             ];
-
             for (let item of datosPrueba) {
                 await fetch(`${SUPABASE_URL}/rest/v1/reportes`, {
                     method: 'POST',
@@ -917,8 +946,6 @@
                     const autor = item.autor_nombre || "Wondertech";
                     let imgBlock = item.foto ? `<div class="card-img-container"><img src="${item.foto}" alt="Imagen"></div>` : '';
                     
-                    const claseAdminActions = usuarioLogueado ? 'admin-actions visible' : 'admin-actions';
-                    
                     container.innerHTML += `
                         <div class="glass-card">
                             <div class="card-content">
@@ -933,10 +960,8 @@
                                     <p class="card-description">${item.detalles}</p>
                                     ${imgBlock}
                                     <div class="product-price-badge">${item.contacto || 'Consultar'}</div>
-                                    
-                                    <div class="${claseAdminActions}">
-                                        <button class="glass-button secondary" style="flex:1; padding: 5px;" onclick="reproducirSonidoClick(); cargarDatosEdicion('${item.id}', '${item.categoria}')">✏️ Editar</button>
-                                        <button class="glass-button danger" style="flex:1; padding: 5px;" onclick="reproducirSonidoClick(); eliminarPublicacion('${item.id}')">🗑️ Eliminar</button>
+                                    <div class="admin-actions">
+                                        <button class="glass-button full-width" style="padding: 6px;" onclick="agregarAlCarrito('${item.id}')">🛒 Añadir al Carrito</button>
                                     </div>
                                 </div>
                                 <p class="card-tip">Wondertech Technologies • Calidad Garantizada</p>
@@ -945,7 +970,7 @@
                 });
             };
 
-            renderizarCards('lista-feed', cacheReportes.filter(r => !['noticias', 'noticia'].includes(r.categoria?.toLowerCase().trim())));
+            renderizarCards('lista-feed', cacheReportes.filter(r => !['noticias', 'noticia', 'service', 'servicio', 'servicios', 'qr'].includes(r.categoria?.toLowerCase().trim()) || r.categoria?.toLowerCase().trim() === 'feed'));
             renderizarCards('lista-service', cacheReportes.filter(r => ['service', 'servicio', 'servicios'].includes(r.categoria?.toLowerCase().trim())));
             renderizarCards('lista-qr', cacheReportes.filter(r => r.categoria?.toLowerCase().trim() === 'qr'));
             renderizarCards('lista-noticias', cacheReportes.filter(r => ['noticias', 'noticia'].includes(r.categoria?.toLowerCase().trim())));
@@ -977,216 +1002,261 @@
             }
         }
 
-        function abrirFormularioActivo(cat) { 
+        function agregarAlCarrito(id) {
             reproducirSonidoClick();
-            document.getElementById(`form-id-${cat}`).value = "";
-            document.getElementById(`form-nombre-${cat}`).value = "";
-            document.getElementById(`form-detalles-${cat}`).value = "";
-            document.getElementById(`form-contacto-${cat}`).value = "";
-            document.getElementById(`form-foto-${cat}`).value = "";
-            document.getElementById(`label-txt-${cat}`).innerText = "📷 Seleccionar imagen";
-            document.getElementById(`preview-service` + (cat === 'service' ? '' : `-${cat}`)).style.display = 'none';
-
-            const tituloForm = document.getElementById(`form-titulo-${cat}`);
-            if(tituloForm) tituloForm.innerText = "Registrar Nuevo Elemento";
-
-            const formBox = document.getElementById(`formulario-ciudadano-${cat}`);
-            if (formBox) formBox.style.display = 'block'; 
-            window.scrollTo({ top: 250, behavior: 'smooth' });
-        }
-
-        function cargarDatosEdicion(id, cat) {
-            let categoriaForm = cat.toLowerCase().trim();
-            if(['servicio', 'servicios'].includes(categoriaForm)) categoriaForm = 'service';
-            if(['noticia'].includes(categoriaForm)) categoriaForm = 'noticias';
-
-            const item = cacheReportes.find(r => r.id == id);
-            if(!item) return;
-
-            cambiarPestana(categoriaForm);
-
-            document.getElementById(`form-id-${categoriaForm}`).value = item.id;
-            document.getElementById(`form-nombre-${categoriaForm}`).value = item.nombre || "";
-            document.getElementById(`form-detalles-${categoriaForm}`).value = item.detalles || "";
-            document.getElementById(`form-contacto-${categoriaForm}`).value = item.contacto || "";
-            document.getElementById(`form-foto-${categoriaForm}`).value = "";
-            
-            const tituloForm = document.getElementById(`form-titulo-${categoriaForm}`);
-            if(tituloForm) tituloForm.innerText = "✏️ Editar Publicación ID: " + id;
-
-            const formBox = document.getElementById(`formulario-ciudadano-${categoriaForm}`);
-            if (formBox) formBox.style.display = 'block';
-            window.scrollTo({ top: 150, behavior: 'smooth' });
-        }
-
-        async function guardarPublicacion(cat) {
-            reproducirSonidoClick();
-            const id = document.getElementById(`form-id-${cat}`).value;
-            const nombre = document.getElementById(`form-nombre-${cat}`).value;
-            const detalles = document.getElementById(`form-detalles-${cat}`).value;
-            const contacto = document.getElementById(`form-contacto-${cat}`).value;
-            const inputFoto = document.getElementById(`form-foto-${cat}`);
-
-            if(!nombre || !detalles) { alert("Completa los campos obligatorios."); return; }
-
-            let fotoUrlFinal = "";
-
-            if (inputFoto.files && inputFoto.files[0]) {
-                const archivo = inputFoto.files[0];
-                const nombreArchivo = `${Date.now()}_${archivo.name.replace(/\s+/g, '_')}`;
-                
-                try {
-                    const uploadRes = await fetch(`${SUPABASE_URL}/storage/v1/object/fotos-reportes/${nombreArchivo}`, {
-                        method: 'POST',
-                        headers: {
-                            "apikey": SUPABASE_KEY,
-                            "Authorization": `Bearer ${tokenAdmin || SUPABASE_KEY}`
-                        },
-                        body: archivo
-                    });
-
-                    if (uploadRes.ok) {
-                        fotoUrlFinal = `${SUPABASE_URL}/storage/v1/object/public/fotos-reportes/${nombreArchivo}`;
-                    } else {
-                        console.error("Error al subir imagen al bucket");
-                    }
-                } catch (err) {
-                    console.error("Error de red al subir imagen:", err);
-                }
-            }
-
-            if (!fotoUrlFinal && id) {
-                const itemAnterior = cacheReportes.find(r => r.id == id);
-                if (itemAnterior) fotoUrlFinal = itemAnterior.foto;
-            } else if (!fotoUrlFinal) {
-                fotoUrlFinal = "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80";
-            }
-
-            const datosItem = {
-                nombre,
-                categoria: cat,
-                detalles,
-                contacto,
-                foto: fotoUrlFinal,
-                autor_nombre: usuarioLogueado ? "Wondertech Admin" : "Wondertech Cliente",
-                autor_avatar: `${SUPABASE_URL}/storage/v1/object/public/fotos-reportes/logo_principal.png`
-            };
-
-            let url = `${SUPABASE_URL}/rest/v1/reportes`;
-            let method = 'POST';
-            let headers = {
-                "apikey": SUPABASE_KEY,
-                "Authorization": `Bearer ${tokenAdmin || SUPABASE_KEY}`,
-                "Content-Type": "application/json",
-                "Prefer": "return=minimal"
-            };
-
-            if(id) {
-                url += `?id=eq.${id}`;
-                method = 'PATCH';
-            }
-
-            const response = await fetch(url, {
-                method: method,
-                headers: headers,
-                body: JSON.stringify(datosItem)
-            });
-
-            if(!response.ok) {
-                alert("Error al guardar en la base de datos.");
+            if (!usuarioActual) {
+                abrirModalConfig();
+                const warningBox = document.getElementById('login-warning-box');
+                warningBox.innerText = "⚠️ Debes iniciar sesión o registrarte para usar el carrito.";
+                warningBox.style.display = 'block';
                 return;
             }
-
-            alert(id ? "Publicación actualizada con éxito." : "Publicación creada con éxito.");
-            location.reload();
+            const producto = cacheReportes.find(r => r.id == id);
+            if (producto) {
+                carrito.push(producto);
+                alert(`¡"${producto.nombre}" añadido al carrito!`);
+            }
         }
 
-        async function eliminarPublicacion(id) {
-            if(!confirm("¿Estás seguro de que deseas eliminar esta publicación?")) return;
+        function abrirCarrito() {
+            toggleConfigMenu();
+            reproducirSonidoClick();
+            if (!usuarioActual) {
+                abrirModalConfig();
+                const warningBox = document.getElementById('login-warning-box');
+                warningBox.innerText = "⚠️ Debes iniciar sesión para ver tu carrito.";
+                warningBox.style.display = 'block';
+                return;
+            }
+            
+            document.getElementById('cartView').style.display = 'block';
+            document.getElementById('checkoutView').style.display = 'none';
+
+            const container = document.getElementById('contenido-carrito-items');
+            const totalEl = document.getElementById('cart-total');
+
+            if (carrito.length === 0) {
+                container.innerHTML = "<p style='text-align:center; opacity:0.6;'>El carrito está vacío.</p>";
+                totalEl.innerText = "$0.00";
+            } else {
+                container.innerHTML = "";
+                let total = 0;
+                carrito.forEach((item) => {
+                    let numPrice = parseFloat(item.contacto?.replace(/[^0-9.]/g, '')) || 0;
+                    total += numPrice;
+                    container.innerHTML += `
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                            <span>${item.nombre}</span>
+                            <span style="color: #34d399; font-weight:bold;">${item.contacto || 'Gratis'}</span>
+                        </div>`;
+                });
+                totalEl.innerText = `$${total.toFixed(2)}`;
+            }
+            document.getElementById('modal-carrito').style.display = 'block';
+        }
+
+        function cerrarModalCarrito() { 
+            reproducirSonidoClick(); 
+            document.getElementById('modal-carrito').style.display = 'none'; 
+        }
+
+        function irAlCheckout() {
+            reproducirSonidoClick();
+            if (carrito.length === 0) { alert("Tu carrito está vacío."); return; }
+            
+            document.getElementById('cartView').style.display = 'none';
+            document.getElementById('checkoutView').style.display = 'block';
+            document.getElementById('invoiceNumber').value = 'FACT-' + Math.floor(10000 + Math.random() * 90000);
+        }
+
+        function regresarAlCarrito() {
+            reproducirSonidoClick();
+            document.getElementById('checkoutView').style.display = 'none';
+            document.getElementById('cartView').style.display = 'block';
+        }
+
+        async function enviarPagoMovil(e) {
+            e.preventDefault();
+            reproducirSonidoClick();
+            const btn = document.getElementById('submitPaymentBtn');
+            btn.textContent = 'Enviando...';
+            btn.disabled = true;
+
+            const invoice_number = document.getElementById('invoiceNumber').value;
+            const customer_name = document.getElementById('customerName').value;
+            const customer_phone = document.getElementById('customerPhone').value;
+            const reference_number = document.getElementById('referenceNumber').value;
+            const amount = parseFloat(document.getElementById('amount').value);
+
+            const msgElement = document.getElementById('responseMessage');
 
             try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/reportes?id=eq.${id}`, {
-                    method: 'DELETE',
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/order_payments`, {
+                    method: 'POST',
                     headers: {
                         "apikey": SUPABASE_KEY,
-                        "Authorization": `Bearer ${tokenAdmin || SUPABASE_KEY}`
-                    }
+                        "Authorization": `Bearer ${SUPABASE_KEY}`,
+                        "Content-Type": "application/json",
+                        "Prefer": "return=minimal"
+                    },
+                    body: JSON.stringify({ invoice_number, customer_name, customer_phone, reference_number, amount })
                 });
 
-                if(!response.ok) throw new Error("No se pudo eliminar el registro.");
+                if (!response.ok) throw new Error("Error al registrar el pago en la base de datos.");
 
-                alert("Publicación eliminada correctamente.");
-                location.reload();
+                msgElement.style.color = '#34d399';
+                msgElement.textContent = `¡Reportado con éxito! Orden: ${invoice_number}`;
+                
+                historialCompras.push(...carrito);
+                carrito = [];
+
+                setTimeout(() => {
+                    cerrarModalCarrito();
+                    msgElement.textContent = '';
+                    btn.textContent = 'Enviar Reporte';
+                    btn.disabled = false;
+                    document.getElementById('paymentForm').reset();
+                }, 3000);
+
             } catch (error) {
-                console.error("Error al eliminar:", error);
-                alert("Error al eliminar la publicación.");
+                msgElement.style.color = '#f87171';
+                msgElement.textContent = 'Hubo un error al enviar el reporte.';
+                btn.textContent = 'Enviar Reporte';
+                btn.disabled = false;
             }
         }
 
-        function abrirModalLogin() { 
+        function abrirHistorial() {
+            toggleConfigMenu();
             reproducirSonidoClick();
+            if (!usuarioActual) {
+                abrirModalConfig();
+                const warningBox = document.getElementById('login-warning-box');
+                warningBox.innerText = "⚠️ Debes iniciar sesión para ver tu historial de compras.";
+                warningBox.style.display = 'block';
+                return;
+            }
+            const container = document.getElementById('contenido-historial-items');
+            if (historialCompras.length === 0) {
+                container.innerHTML = "<p style='text-align:center; opacity:0.6;'>No tienes compras registradas.</p>";
+            } else {
+                container.innerHTML = "";
+                historialCompras.forEach((item) => {
+                    container.innerHTML += `
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                            <span>📦 ${item.nombre}</span>
+                            <span style="color: #34d399; font-weight:bold;">${item.contacto || ''}</span>
+                        </div>`;
+                });
+            }
+            document.getElementById('modal-historial').style.display = 'block';
+        }
+
+        function cerrarModalHistorial() { reproducirSonidoClick(); document.getElementById('modal-historial').style.display = 'none'; }
+
+        function abrirModalConfig() { 
+            reproducirSonidoClick(); 
+            document.getElementById('login-warning-box').style.display = 'none';
+            document.getElementById('reg-warning-box').style.display = 'none';
             document.getElementById('modal-login').style.display = 'block'; 
         }
-        function cerrarModalLogin() { 
-            reproducirSonidoClick();
-            document.getElementById('modal-login').style.display = 'none'; 
-        }
+        function cerrarModalConfig() { reproducirSonidoClick(); document.getElementById('modal-login').style.display = 'none'; }
         
-        function mostrarNombreArchivo(input, previewId, labelTxtId) { 
-            if(input.files.length > 0) {
-                document.getElementById(previewId).style.display = 'block';
-                document.getElementById(labelTxtId).innerText = "✓ " + input.files[0].name;
+        async function registrarUsuario() {
+            reproducirSonidoClick();
+            const email = document.getElementById('reg-email').value;
+            const password = document.getElementById('reg-password').value;
+            const warningBox = document.getElementById('reg-warning-box');
+
+            warningBox.style.display = 'none';
+
+            if (!email || !password) { 
+                warningBox.innerText = "⚠️ Completa todos los campos para registrarte.";
+                warningBox.style.display = 'block';
+                return; 
+            }
+
+            try {
+                const response = await fetch(`${SUPABASE_URL}/auth/v1/signup`, {
+                    method: 'POST',
+                    headers: { "apikey": SUPABASE_KEY, "Content-Type": "application/json" },
+                    body: JSON.stringify({ email: email, password: password })
+                });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.msg || data.error_description || "Error al registrarse");
+
+                warningBox.innerText = "✅ ¡Cuenta creada con éxito! Revisa tu correo electrónico para confirmarla y activarla antes de iniciar sesión.";
+                warningBox.style.display = 'block';
+                
+                setTimeout(() => {
+                    cambiarAuthTab('login');
+                }, 4000);
+
+            } catch (error) {
+                warningBox.innerText = "⚠️ Error en el registro: " + error.message;
+                warningBox.style.display = 'block';
             }
         }
-        
+
         async function iniciarSesion() {
             reproducirSonidoClick();
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
+            const warningBox = document.getElementById('login-warning-box');
 
-            if (!email || !password) {
-                alert("Por favor ingresa correo y contraseña.");
-                return;
+            warningBox.style.display = 'none';
+
+            if (!email || !password) { 
+                warningBox.innerText = "⚠️ Ingresa correo y contraseña.";
+                warningBox.style.display = 'block';
+                return; 
             }
 
             try {
                 const response = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
                     method: 'POST',
-                    headers: {
-                        "apikey": SUPABASE_KEY,
-                        "Content-Type": "application/json"
-                    },
+                    headers: { "apikey": SUPABASE_KEY, "Content-Type": "application/json" },
                     body: JSON.stringify({ email: email, password: password })
                 });
-
                 const data = await response.json();
-
+                
                 if (!response.ok) {
-                    throw new Error(data.error_description || data.msg || "Credenciales incorrectas");
+                    if (data.error === "email_not_confirmed" || (data.error_description && data.error_description.toLowerCase().includes("email not confirmed"))) {
+                        warningBox.innerText = "⚠️ Cuenta no verificada. Te hemos enviado un correo de confirmación. Por favor, revísalo y haz clic en el botón para activar tu cuenta antes de iniciar sesión.";
+                        warningBox.style.display = 'block';
+                        return;
+                    }
+                    throw new Error(data.error_description || "Credenciales incorrectas");
                 }
 
-                usuarioLogueado = data.user;
-                tokenAdmin = data.access_token;
+                usuarioActual = email;
                 
-                alert("¡Bienvenido al panel de administración!");
-                cerrarModalLogin();
-                
-                document.querySelectorAll('.admin-panel').forEach(panel => panel.style.display = 'block');
-                renderizarTodo();
+                localStorage.setItem('wt_user_email', email);
+                if(data.access_token) {
+                    localStorage.setItem('wt_access_token', data.access_token);
+                }
 
+                document.getElementById('label-auth-menu').innerText = email.split('@')[0];
+                document.getElementById('menu-item-logout').style.display = 'flex';
+                
+                cerrarModalConfig();
             } catch (error) {
-                console.error("Error de autenticación:", error);
-                alert("Error al iniciar sesión: " + error.message);
+                warningBox.innerText = "⚠️ Error al iniciar sesión: " + error.message;
+                warningBox.style.display = 'block';
             }
         }
 
-        async function cerrarSesion() { 
+        function cerrarSesion() { 
             reproducirSonidoClick();
-            usuarioLogueado = null;
-            tokenAdmin = null;
-            document.querySelectorAll('.admin-panel').forEach(panel => panel.style.display = 'none');
-            renderizarTodo();
-            alert("Sesión cerrada correctamente.");
+            usuarioActual = null;
+            carrito = [];
+            historialCompras = [];
+
+            localStorage.removeItem('wt_user_email');
+            localStorage.removeItem('wt_access_token');
+
+            document.getElementById('label-auth-menu').innerText = "Iniciar Sesión / Registrarse";
+            document.getElementById('menu-item-logout').style.display = 'none';
         }
     </script>
 </body>
