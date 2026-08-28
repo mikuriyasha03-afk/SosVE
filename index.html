@@ -858,12 +858,48 @@
         function cerrarModalLogin() { document.getElementById('modal-login').style.display = 'none'; }
         function mostrarNombreArchivo(i, previewId) { if(i.files.length>0) document.getElementById(previewId).style.display='block'; }
         
-        async function iniciarSesion() { 
-            alert("Función de inicio de sesión administrativo mediante fetch disponible próximamente.");
-            cerrarModalLogin();
+        async function iniciarSesion() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
+            if (!email || !password) {
+                alert("Por favor ingresa correo y contraseña.");
+                return;
+            }
+
+            try {
+                const response = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+                    method: 'POST',
+                    headers: {
+                        "apikey": SUPABASE_KEY,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ email: email, password: password })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error_description || data.msg || "Credenciales incorrectas");
+                }
+
+                usuarioLogueado = data.user;
+                alert("¡Bienvenido al panel de administración!");
+                cerrarModalLogin();
+                
+                // Muestra los paneles de control de administrador en las pestañas
+                document.querySelectorAll('.admin-panel').forEach(panel => panel.style.display = 'block');
+
+            } catch (error) {
+                console.error("Error de autenticación:", error);
+                alert("Error al iniciar sesión: " + error.message);
+            }
         }
+
         async function cerrarSesion() { 
-            location.reload(); 
+            usuarioLogueado = null;
+            document.querySelectorAll('.admin-panel').forEach(panel => panel.style.display = 'none');
+            alert("Sesión cerrada correctamente.");
         }
     </script>
 </body>
