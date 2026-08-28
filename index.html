@@ -114,6 +114,19 @@
             box-shadow: 0 8px 25px rgba(255, 255, 255, 0.15);
         }
 
+        .glass-button.danger {
+            background: rgba(239, 68, 68, 0.15);
+            border-color: rgba(239, 68, 68, 0.4);
+            color: #fca5a5;
+        }
+
+        .glass-button.danger:hover {
+            background: rgba(239, 68, 68, 0.3);
+            border-color: rgba(239, 68, 68, 0.8);
+            color: #ffffff;
+            box-shadow: 0 8px 25px rgba(239, 68, 68, 0.3);
+        }
+
         /* NAVBAR SUPERIOR */
         .apple-nav {
             background: rgba(15, 23, 42, 0.85);
@@ -423,6 +436,15 @@
             backdrop-filter: blur(8px);
         }
 
+        .admin-actions {
+            display: none;
+            gap: 8px;
+            margin-top: 14px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .admin-actions.visible { display: flex; }
+
         .card-tip { font-size: 12px; text-align: center; color: #94a3b8; margin: 12px 0 0 0; }
 
         .admin-panel, .form-box {
@@ -536,7 +558,8 @@
                 <button class="glass-button secondary full-width" onclick="cerrarSesion()">Cerrar Sesión</button>
             </div>
             <div id="formulario-ciudadano-service" class="form-box">
-                <h3 style="margin-bottom: 14px; font-size:16px;">Agregar Nuevo Servicio</h3>
+                <h3 style="margin-bottom: 14px; font-size:16px;" id="form-titulo-service">Agregar Nuevo Servicio</h3>
+                <input type="hidden" id="form-id-service">
                 <div class="input-group"><label>Título:</label><input type="text" id="form-nombre-service" placeholder="Ej: Título..."></div>
                 <div class="input-group"><label>Descripción:</label><textarea id="form-detalles-service" rows="3"></textarea></div>
                 <div class="input-group"><label>Precio:</label><input type="text" id="form-contacto-service" placeholder="Ej: $25.00"></div>
@@ -548,7 +571,7 @@
                     </div>
                 </div>
                 <div id="preview-service" class="file-name-preview">✓ Imagen lista</div>
-                <button class="glass-button full-width" style="margin-top: 10px;" onclick="enviarReportePublico('service')">Publicar</button>
+                <button class="glass-button full-width" style="margin-top: 10px;" onclick="guardarPublicacion('service')">Guardar Publicación</button>
             </div>
             <div class="section-top-bar">
                 <h2 class="section-header-title">Soporte y Reparación</h2>
@@ -565,7 +588,8 @@
                 <button class="glass-button secondary full-width" onclick="cerrarSesion()">Cerrar Sesión</button>
             </div>
             <div id="formulario-ciudadano-qr" class="form-box">
-                <h3 style="margin-bottom: 14px; font-size:16px;">Agregar Plaquita</h3>
+                <h3 style="margin-bottom: 14px; font-size:16px;" id="form-titulo-qr">Agregar Plaquita</h3>
+                <input type="hidden" id="form-id-qr">
                 <div class="input-group"><label>Título:</label><input type="text" id="form-nombre-qr"></div>
                 <div class="input-group"><label>Descripción:</label><textarea id="form-detalles-qr" rows="3"></textarea></div>
                 <div class="input-group"><label>Precio:</label><input type="text" id="form-contacto-qr"></div>
@@ -577,7 +601,7 @@
                     </div>
                 </div>
                 <div id="preview-qr" class="file-name-preview">✓ Imagen lista</div>
-                <button class="glass-button full-width" style="margin-top: 10px;" onclick="enviarReportePublico('qr')">Publicar</button>
+                <button class="glass-button full-width" style="margin-top: 10px;" onclick="guardarPublicacion('qr')">Guardar Publicación</button>
             </div>
             <div class="section-top-bar">
                 <h2 class="section-header-title">Placas Inteligentes con QR</h2>
@@ -594,7 +618,8 @@
                 <button class="glass-button secondary full-width" onclick="cerrarSesion()">Cerrar Sesión</button>
             </div>
             <div id="formulario-ciudadano-noticias" class="form-box">
-                <h3 style="margin-bottom: 14px; font-size:16px;">Agregar Noticia</h3>
+                <h3 style="margin-bottom: 14px; font-size:16px;" id="form-titulo-noticias">Agregar Noticia</h3>
+                <input type="hidden" id="form-id-noticias">
                 <div class="input-group"><label>Título:</label><input type="text" id="form-nombre-noticias"></div>
                 <div class="input-group"><label>Descripción:</label><textarea id="form-detalles-noticias" rows="3"></textarea></div>
                 <div class="input-group"><label>Precio / Nota:</label><input type="text" id="form-contacto-noticias"></div>
@@ -606,7 +631,7 @@
                     </div>
                 </div>
                 <div id="preview-noticias" class="file-name-preview">✓ Imagen lista</div>
-                <button class="glass-button full-width" style="margin-top: 10px;" onclick="enviarReportePublico('noticias')">Publicar</button>
+                <button class="glass-button full-width" style="margin-top: 10px;" onclick="guardarPublicacion('noticias')">Guardar Publicación</button>
             </div>
             <div class="section-top-bar">
                 <h2 class="section-header-title">Noticias Tech</h2>
@@ -623,7 +648,8 @@
                 <button class="glass-button secondary full-width" onclick="cerrarSesion()">Cerrar Sesión</button>
             </div>
             <div id="formulario-ciudadano-feed" class="form-box">
-                <h3 style="margin-bottom: 14px; font-size:16px;">Agregar al Catálogo</h3>
+                <h3 style="margin-bottom: 14px; font-size:16px;" id="form-titulo-feed">Agregar al Catálogo</h3>
+                <input type="hidden" id="form-id-feed">
                 <div class="input-group"><label>Título:</label><input type="text" id="form-nombre-feed"></div>
                 <div class="input-group"><label>Descripción:</label><textarea id="form-detalles-feed" rows="3"></textarea></div>
                 <div class="input-group"><label>Precio:</label><input type="text" id="form-contacto-feed"></div>
@@ -635,7 +661,7 @@
                     </div>
                 </div>
                 <div id="preview-feed" class="file-name-preview">✓ Imagen lista</div>
-                <button class="glass-button full-width" style="margin-top: 10px;" onclick="enviarReportePublico('feed')">Publicar</button>
+                <button class="glass-button full-width" style="margin-top: 10px;" onclick="guardarPublicacion('feed')">Guardar Publicación</button>
             </div>
             <h2 class="section-header-title" style="margin-bottom: 20px;">Lo último. Novedades.</h2>
             <div id="lista-feed" class="feed-container">Cargando catálogo...</div>
@@ -659,6 +685,7 @@
         const SUPABASE_KEY = "sb_publishable_TlydS60DSu5pDs6i9LwIPQ_zl00u_mR";
 
         let usuarioLogueado = null;
+        let tokenAdmin = null;
         let cacheReportes = [];
         const ordenCategorias = ['service', 'qr', 'noticias', 'feed'];
         let categoriaActualIndex = 3; 
@@ -765,6 +792,9 @@
                     const autor = item.autor_nombre || "Wondertech";
                     let imgBlock = item.foto ? `<div class="card-img-container"><img src="${item.foto}" alt="Imagen"></div>` : '';
                     
+                    // Mostrar botones de edición si el usuario está logueado como admin
+                    const claseAdminActions = usuarioLogueado ? 'admin-actions visible' : 'admin-actions';
+                    
                     container.innerHTML += `
                         <div class="glass-card">
                             <div class="card-content">
@@ -779,6 +809,11 @@
                                     <p class="card-description">${item.detalles}</p>
                                     ${imgBlock}
                                     <div class="product-price-badge">${item.contacto || 'Consultar'}</div>
+                                    
+                                    <div class="${claseAdminActions}">
+                                        <button class="glass-button secondary" style="flex:1; padding: 6px;" onclick="cargarDatosEdicion('${item.id}', '${item.categoria}')">✏️ Editar</button>
+                                        <button class="glass-button danger" style="flex:1; padding: 6px;" onclick="eliminarPublicacion('${item.id}')">🗑️ Eliminar</button>
+                                    </div>
                                 </div>
                                 <p class="card-tip">Wondertech Technologies • Calidad Garantizada</p>
                             </div>
@@ -817,41 +852,113 @@
         }
 
         function abrirFormularioActivo(cat) { 
+            // Limpiar campos para modo creación nueva
+            document.getElementById(`form-id-${cat}`).value = "";
+            document.getElementById(`form-nombre-${cat}`).value = "";
+            document.getElementById(`form-detalles-${cat}`).value = "";
+            document.getElementById(`form-contacto-${cat}`).value = "";
+            const tituloForm = document.getElementById(`form-titulo-${cat}`);
+            if(tituloForm) tituloForm.innerText = "Registrar Nuevo Elemento";
+
             const formBox = document.getElementById(`formulario-ciudadano-${cat}`);
             if (formBox) formBox.style.display = 'block'; 
             window.scrollTo({ top: 300, behavior: 'smooth' });
         }
 
-        async function enviarReportePublico(cat) {
+        function cargarDatosEdicion(id, cat) {
+            // Normalizar categoría de busqueda
+            let categoriaForm = cat.toLowerCase().trim();
+            if(['servicio', 'servicios'].includes(categoriaForm)) categoriaForm = 'service';
+            if(['noticia'].includes(categoriaForm)) categoriaForm = 'noticias';
+
+            const item = cacheReportes.find(r => r.id == id);
+            if(!item) return;
+
+            // Abrir pestaña correspondiente
+            cambiarPestana(categoriaForm);
+
+            // Rellenar formulario con datos actuales
+            document.getElementById(`form-id-${categoriaForm}`).value = item.id;
+            document.getElementById(`form-nombre-${categoriaForm}`).value = item.nombre || "";
+            document.getElementById(`form-detalles-${categoriaForm}`).value = item.detalles || "";
+            document.getElementById(`form-contacto-${categoriaForm}`).value = item.contacto || "";
+            
+            const tituloForm = document.getElementById(`form-titulo-${categoriaForm}`);
+            if(tituloForm) tituloForm.innerText = "✏️ Editar Publicación ID: " + id;
+
+            const formBox = document.getElementById(`formulario-ciudadano-${categoriaForm}`);
+            if (formBox) formBox.style.display = 'block';
+            window.scrollTo({ top: 200, behavior: 'smooth' });
+        }
+
+        async function guardarPublicacion(cat) {
+            const id = document.getElementById(`form-id-${cat}`).value;
             const nombre = document.getElementById(`form-nombre-${cat}`).value;
             const detalles = document.getElementById(`form-detalles-${cat}`).value;
             const contacto = document.getElementById(`form-contacto-${cat}`).value;
 
             if(!nombre || !detalles) { alert("Completa los campos obligatorios."); return; }
 
-            const nuevoItem = {
+            const datosItem = {
                 nombre,
                 categoria: cat,
                 detalles,
                 contacto,
                 foto: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80",
-                autor_nombre: "Wondertech Cliente",
+                autor_nombre: "Wondertech Admin",
                 autor_avatar: `${SUPABASE_URL}/storage/v1/object/public/fotos-reportes/logo_principal.png`
             };
 
-            await fetch(`${SUPABASE_URL}/rest/v1/reportes`, {
-                method: 'POST',
-                headers: {
-                    "apikey": SUPABASE_KEY,
-                    "Authorization": `Bearer ${SUPABASE_KEY}`,
-                    "Content-Type": "application/json",
-                    "Prefer": "return=minimal"
-                },
-                body: JSON.stringify(nuevoItem)
+            let url = `${SUPABASE_URL}/rest/v1/reportes`;
+            let method = 'POST';
+            let headers = {
+                "apikey": SUPABASE_KEY,
+                "Authorization": `Bearer ${tokenAdmin || SUPABASE_KEY}`,
+                "Content-Type": "application/json",
+                "Prefer": "return=minimal"
+            };
+
+            if(id) {
+                // Actualizar registro existente
+                url += `?id=eq.${id}`;
+                method = 'PATCH';
+            }
+
+            const response = await fetch(url, {
+                method: method,
+                headers: headers,
+                body: JSON.stringify(datosItem)
             });
 
-            alert("Publicación agregada con éxito.");
+            if(!response.ok) {
+                alert("Error al guardar en la base de datos.");
+                return;
+            }
+
+            alert(id ? "Publicación actualizada con éxito." : "Publicación creada con éxito.");
             location.reload();
+        }
+
+        async function eliminarPublicacion(id) {
+            if(!confirm("¿Estás seguro de que deseas eliminar esta publicación?")) return;
+
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/reportes?id=eq.${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        "apikey": SUPABASE_KEY,
+                        "Authorization": `Bearer ${tokenAdmin || SUPABASE_KEY}`
+                    }
+                });
+
+                if(!response.ok) throw new Error("No se pudo eliminar el registro.");
+
+                alert("Publicación eliminada correctamente.");
+                location.reload();
+            } catch (error) {
+                console.error("Error al eliminar:", error);
+                alert("Error al eliminar la publicación.");
+            }
         }
 
         function abrirModalLogin() { document.getElementById('modal-login').style.display = 'block'; }
@@ -884,11 +991,14 @@
                 }
 
                 usuarioLogueado = data.user;
+                tokenAdmin = data.access_token; // Guardamos el token de autenticación para permisos RLS
+                
                 alert("¡Bienvenido al panel de administración!");
                 cerrarModalLogin();
                 
-                // Muestra los paneles de control de administrador en las pestañas
+                // Muestra paneles de administración y habilita botones de edición/eliminación en las cards
                 document.querySelectorAll('.admin-panel').forEach(panel => panel.style.display = 'block');
+                renderizarTodo();
 
             } catch (error) {
                 console.error("Error de autenticación:", error);
@@ -898,7 +1008,9 @@
 
         async function cerrarSesion() { 
             usuarioLogueado = null;
+            tokenAdmin = null;
             document.querySelectorAll('.admin-panel').forEach(panel => panel.style.display = 'none');
+            renderizarTodo();
             alert("Sesión cerrada correctamente.");
         }
     </script>
