@@ -566,11 +566,11 @@
                 <div class="input-group">
                     <label>Imagen:</label>
                     <div class="file-upload-wrapper">
-                        <div class="file-upload-label">📷 Seleccionar imagen</div>
-                        <input type="file" id="form-foto-service" accept="image/*" onchange="mostrarNombreArchivo(this, 'preview-service')">
+                        <div class="file-upload-label" id="label-txt-service">📷 Seleccionar imagen</div>
+                        <input type="file" id="form-foto-service" accept="image/*" onchange="mostrarNombreArchivo(this, 'preview-service', 'label-txt-service')">
                     </div>
                 </div>
-                <div id="preview-service" class="file-name-preview">✓ Imagen lista</div>
+                <div id="preview-service" class="file-name-preview">✓ Imagen seleccionada</div>
                 <button class="glass-button full-width" style="margin-top: 10px;" onclick="guardarPublicacion('service')">Guardar Publicación</button>
             </div>
             <div class="section-top-bar">
@@ -596,11 +596,11 @@
                 <div class="input-group">
                     <label>Imagen:</label>
                     <div class="file-upload-wrapper">
-                        <div class="file-upload-label">📷 Seleccionar imagen</div>
-                        <input type="file" id="form-foto-qr" accept="image/*" onchange="mostrarNombreArchivo(this, 'preview-qr')">
+                        <div class="file-upload-label" id="label-txt-qr">📷 Seleccionar imagen</div>
+                        <input type="file" id="form-foto-qr" accept="image/*" onchange="mostrarNombreArchivo(this, 'preview-qr', 'label-txt-qr')">
                     </div>
                 </div>
-                <div id="preview-qr" class="file-name-preview">✓ Imagen lista</div>
+                <div id="preview-qr" class="file-name-preview">✓ Imagen seleccionada</div>
                 <button class="glass-button full-width" style="margin-top: 10px;" onclick="guardarPublicacion('qr')">Guardar Publicación</button>
             </div>
             <div class="section-top-bar">
@@ -626,11 +626,11 @@
                 <div class="input-group">
                     <label>Imagen:</label>
                     <div class="file-upload-wrapper">
-                        <div class="file-upload-label">📷 Seleccionar imagen</div>
-                        <input type="file" id="form-foto-noticias" accept="image/*" onchange="mostrarNombreArchivo(this, 'preview-noticias')">
+                        <div class="file-upload-label" id="label-txt-noticias">📷 Seleccionar imagen</div>
+                        <input type="file" id="form-foto-noticias" accept="image/*" onchange="mostrarNombreArchivo(this, 'preview-noticias', 'label-txt-noticias')">
                     </div>
                 </div>
-                <div id="preview-noticias" class="file-name-preview">✓ Imagen lista</div>
+                <div id="preview-noticias" class="file-name-preview">✓ Imagen seleccionada</div>
                 <button class="glass-button full-width" style="margin-top: 10px;" onclick="guardarPublicacion('noticias')">Guardar Publicación</button>
             </div>
             <div class="section-top-bar">
@@ -656,11 +656,11 @@
                 <div class="input-group">
                     <label>Imagen:</label>
                     <div class="file-upload-wrapper">
-                        <div class="file-upload-label">📷 Seleccionar imagen</div>
-                        <input type="file" id="form-foto-feed" accept="image/*" onchange="mostrarNombreArchivo(this, 'preview-feed')">
+                        <div class="file-upload-label" id="label-txt-feed">📷 Seleccionar imagen</div>
+                        <input type="file" id="form-foto-feed" accept="image/*" onchange="mostrarNombreArchivo(this, 'preview-feed', 'label-txt-feed')">
                     </div>
                 </div>
-                <div id="preview-feed" class="file-name-preview">✓ Imagen lista</div>
+                <div id="preview-feed" class="file-name-preview">✓ Imagen seleccionada</div>
                 <button class="glass-button full-width" style="margin-top: 10px;" onclick="guardarPublicacion('feed')">Guardar Publicación</button>
             </div>
             <h2 class="section-header-title" style="margin-bottom: 20px;">Lo último. Novedades.</h2>
@@ -792,7 +792,6 @@
                     const autor = item.autor_nombre || "Wondertech";
                     let imgBlock = item.foto ? `<div class="card-img-container"><img src="${item.foto}" alt="Imagen"></div>` : '';
                     
-                    // Mostrar botones de edición si el usuario está logueado como admin
                     const claseAdminActions = usuarioLogueado ? 'admin-actions visible' : 'admin-actions';
                     
                     container.innerHTML += `
@@ -852,11 +851,14 @@
         }
 
         function abrirFormularioActivo(cat) { 
-            // Limpiar campos para modo creación nueva
             document.getElementById(`form-id-${cat}`).value = "";
             document.getElementById(`form-nombre-${cat}`).value = "";
             document.getElementById(`form-detalles-${cat}`).value = "";
             document.getElementById(`form-contacto-${cat}`).value = "";
+            document.getElementById(`form-foto-${cat}`).value = "";
+            document.getElementById(`label-txt-${cat}`).innerText = "📷 Seleccionar imagen";
+            document.getElementById(`preview-service` + (cat === 'service' ? '' : `-${cat}`)).style.display = 'none'; // ocultar preview
+
             const tituloForm = document.getElementById(`form-titulo-${cat}`);
             if(tituloForm) tituloForm.innerText = "Registrar Nuevo Elemento";
 
@@ -866,7 +868,6 @@
         }
 
         function cargarDatosEdicion(id, cat) {
-            // Normalizar categoría de busqueda
             let categoriaForm = cat.toLowerCase().trim();
             if(['servicio', 'servicios'].includes(categoriaForm)) categoriaForm = 'service';
             if(['noticia'].includes(categoriaForm)) categoriaForm = 'noticias';
@@ -874,14 +875,13 @@
             const item = cacheReportes.find(r => r.id == id);
             if(!item) return;
 
-            // Abrir pestaña correspondiente
             cambiarPestana(categoriaForm);
 
-            // Rellenar formulario con datos actuales
             document.getElementById(`form-id-${categoriaForm}`).value = item.id;
             document.getElementById(`form-nombre-${categoriaForm}`).value = item.nombre || "";
             document.getElementById(`form-detalles-${categoriaForm}`).value = item.detalles || "";
             document.getElementById(`form-contacto-${categoriaForm}`).value = item.contacto || "";
+            document.getElementById(`form-foto-${categoriaForm}`).value = ""; // Limpiar input file por si no cambia la foto
             
             const tituloForm = document.getElementById(`form-titulo-${categoriaForm}`);
             if(tituloForm) tituloForm.innerText = "✏️ Editar Publicación ID: " + id;
@@ -896,16 +896,56 @@
             const nombre = document.getElementById(`form-nombre-${cat}`).value;
             const detalles = document.getElementById(`form-detalles-${cat}`).value;
             const contacto = document.getElementById(`form-contacto-${cat}`).value;
+            const inputFoto = document.getElementById(`form-foto-${cat}`);
 
             if(!nombre || !detalles) { alert("Completa los campos obligatorios."); return; }
+
+            let fotoUrlFinal = "";
+
+            // Si se seleccionó una nueva imagen, subirla a Supabase Storage
+            if (inputFoto.files && inputFoto.files[0]) {
+                const archivo = inputFoto.files[0];
+                const nombreArchivo = `${Date.now()}_${archivo.name.replace(/\s+/g, '_')}`;
+                
+                const formData = new FormData();
+                formData.append('file', archivo);
+
+                try {
+                    const uploadRes = await fetch(`${SUPABASE_URL}/storage/v1/object/fotos-reportes/${nombreArchivo}`, {
+                        method: 'POST',
+                        headers: {
+                            "apikey": SUPABASE_KEY,
+                            "Authorization": `Bearer ${tokenAdmin || SUPABASE_KEY}`
+                        },
+                        body: archivo
+                    });
+
+                    if (uploadRes.ok) {
+                        fotoUrlFinal = `${SUPABASE_URL}/storage/v1/object/public/fotos-reportes/${nombreArchivo}`;
+                    } else {
+                        console.error("Error al subir imagen al bucket");
+                    }
+                } catch (err) {
+                    console.error("Error de red al subir imagen:", err);
+                }
+            }
+
+            // Si es edición y no se eligió nueva foto, conservar la foto anterior
+            if (!fotoUrlFinal && id) {
+                const itemAnterior = cacheReportes.find(r => r.id == id);
+                if (itemAnterior) fotoUrlFinal = itemAnterior.foto;
+            } else if (!fotoUrlFinal) {
+                // Imagen por defecto si es nueva y no se seleccionó archivo
+                fotoUrlFinal = "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80";
+            }
 
             const datosItem = {
                 nombre,
                 categoria: cat,
                 detalles,
                 contacto,
-                foto: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80",
-                autor_nombre: "Wondertech Admin",
+                foto: fotoUrlFinal,
+                autor_nombre: usuarioLogueado ? "Wondertech Admin" : "Wondertech Cliente",
                 autor_avatar: `${SUPABASE_URL}/storage/v1/object/public/fotos-reportes/logo_principal.png`
             };
 
@@ -919,7 +959,6 @@
             };
 
             if(id) {
-                // Actualizar registro existente
                 url += `?id=eq.${id}`;
                 method = 'PATCH';
             }
@@ -963,7 +1002,13 @@
 
         function abrirModalLogin() { document.getElementById('modal-login').style.display = 'block'; }
         function cerrarModalLogin() { document.getElementById('modal-login').style.display = 'none'; }
-        function mostrarNombreArchivo(i, previewId) { if(i.files.length>0) document.getElementById(previewId).style.display='block'; }
+        
+        function mostrarNombreArchivo(input, previewId, labelTxtId) { 
+            if(input.files.length > 0) {
+                document.getElementById(previewId).style.display = 'block';
+                document.getElementById(labelTxtId).innerText = "✓ " + input.files[0].name;
+            }
+        }
         
         async function iniciarSesion() {
             const email = document.getElementById('login-email').value;
@@ -991,12 +1036,11 @@
                 }
 
                 usuarioLogueado = data.user;
-                tokenAdmin = data.access_token; // Guardamos el token de autenticación para permisos RLS
+                tokenAdmin = data.access_token;
                 
                 alert("¡Bienvenido al panel de administración!");
                 cerrarModalLogin();
                 
-                // Muestra paneles de administración y habilita botones de edición/eliminación en las cards
                 document.querySelectorAll('.admin-panel').forEach(panel => panel.style.display = 'block');
                 renderizarTodo();
 
