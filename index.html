@@ -458,7 +458,7 @@
         <div id="panel-personal" class="admin-panel" style="display:none;">
             <h3 style="margin-bottom: 14px; font-size:16px;">🛠️ Panel de Control - Administración</h3>
             <div class="input-group">
-                <label>🖼️ Actualizar Logotipo Circular de la Marca:</label>
+                <label>🖼️ Actualizar Logotipo Circular de la Marca (Se aplicará a todos los dispositivos):</label>
                 <div class="file-upload-wrapper">
                     <div class="file-upload-label">📁 Seleccionar imagen de logo</div>
                     <input type="file" id="input-nuevo-logo" accept="image/*" onchange="actualizarLogoAdmin(this)">
@@ -580,7 +580,8 @@
                 }
             } catch (e) {}
             
-            await cargarLogoGuardado();
+            // Carga el logo fijo y público globalmente para cualquier dispositivo
+            await cargarLogoPublicoGlobal();
             await verificarYCrearDatosIniciales();
             await cargarContenido();
 
@@ -592,32 +593,32 @@
             }, 1000);
         };
 
-        async function cargarLogoGuardado() {
-            const logoUrl = localStorage.getItem('wondertech_logo');
-            if (logoUrl) {
-                document.getElementById('logo-splash-img').src = logoUrl;
-                document.getElementById('logo-nav-img').src = logoUrl;
-            }
+        async function cargarLogoPublicoGlobal() {
+            // URL directa al archivo fijo en Supabase Storage con anti-cache dinámico
+            const logoUrlFijo = `${SUPABASE_URL}/storage/v1/object/public/fotos-reportes/logo_principal.png?t=${Date.now()}`;
+            
+            document.getElementById('logo-splash-img').src = logoUrlFijo;
+            document.getElementById('logo-nav-img').src = logoUrlFijo;
         }
 
         async function actualizarLogoAdmin(input) {
             const archivo = input.files[0];
             if (!archivo) return;
 
-            const nombreArchivo = `logo_${Date.now()}_${archivo.name.replace(/\s/g, '_')}`;
-            const { data, error } = await _supabase.storage.from('fotos-reportes').upload(nombreArchivo, archivo);
+            // Nombre fijo para sobrescribir siempre el mismo archivo
+            const nombreArchivo = "logo_principal.png";
+            
+            const { error } = await _supabase.storage
+                .from('fotos-reportes')
+                .upload(nombreArchivo, archivo, { upsert: true });
             
             if (error) {
                 alert("Error al subir el logo: " + error.message);
                 return;
             }
 
-            const urlPublica = _supabase.storage.from('fotos-reportes').getPublicUrl(nombreArchivo).data.publicUrl;
-            localStorage.setItem('wondertech_logo', urlPublica);
-
-            document.getElementById('logo-splash-img').src = urlPublica;
-            document.getElementById('logo-nav-img').src = urlPublica;
-            alert("¡Logo circular actualizado con éxito!");
+            alert("¡Logo actualizado con éxito para todos los dispositivos!");
+            location.reload();
         }
 
         async function verificarYCrearDatosIniciales() {
@@ -636,7 +637,7 @@
                     contacto: "$10.00",
                     foto: "https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=800&q=80",
                     autor_nombre: "Wondertech Technologies",
-                    autor_avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&h=100&q=80"
+                    autor_avatar: `${SUPABASE_URL}/storage/v1/object/public/fotos-reportes/logo_principal.png`
                 },
                 {
                     nombre: "Reparación y Mantenimiento de Laptops",
@@ -645,7 +646,7 @@
                     contacto: "$35.00",
                     foto: "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?auto=format&fit=crop&w=800&q=80",
                     autor_nombre: "Wondertech Soporte",
-                    autor_avatar: "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&w=100&h=100&q=80"
+                    autor_avatar: `${SUPABASE_URL}/storage/v1/object/public/fotos-reportes/logo_principal.png`
                 },
                 {
                     nombre: "Lanzamiento de nuevas tecnologías de procesamiento móvil",
@@ -654,7 +655,7 @@
                     contacto: "Gratis",
                     foto: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80",
                     autor_nombre: "Wondertech News",
-                    autor_avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&h=100&q=80"
+                    autor_avatar: `${SUPABASE_URL}/storage/v1/object/public/fotos-reportes/logo_principal.png`
                 }
             ];
 
@@ -684,7 +685,7 @@
                 if (data) urlFotoPublica = _supabase.storage.from('fotos-reportes').getPublicUrl(nombreArchivo).data.publicUrl;
             }
 
-            const currentLogo = localStorage.getItem('wondertech_logo') || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&h=100&q=80";
+            const currentLogo = `${SUPABASE_URL}/storage/v1/object/public/fotos-reportes/logo_principal.png`;
 
             await _supabase.from('reportes').insert([{ 
                 nombre, categoria: category, detalles, contacto, foto: urlFotoPublica,
@@ -787,7 +788,7 @@
                 container.innerHTML = listaItems && listaItems.length > 0 ? "" : "<p style='text-align:center; opacity:0.6; padding: 20px;'>No hay elementos registrados en esta sección.</p>";
 
                 listaItems?.forEach(item => {
-                    const avatar = item.autor_avatar || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&h=100&q=80";
+                    const avatar = item.autor_avatar || `${SUPABASE_URL}/storage/v1/object/public/fotos-reportes/logo_principal.png`;
                     const autor = item.autor_nombre || "Wondertech";
                     let imgBlock = item.foto ? `<div class="card-img-container"><img src="${item.foto}" alt="Imagen"></div>` : '';
 
