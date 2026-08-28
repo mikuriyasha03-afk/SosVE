@@ -129,7 +129,7 @@
         }
 
         .apple-nav-content {
-            max-width: 1000px; /* Actualizado a 1000px para PC */
+            max-width: 1000px;
             width: 100%;
             height: 76px;
             display: flex;
@@ -261,9 +261,9 @@
             .mobile-nav-item.active .mobile-text { color: #ffffff; font-weight: 700; }
         }
 
-        /* CONTENEDOR Y ANIMACIONES WAVE */
+        /* CONTENEDOR Y ANIMACIONES WAVE EN CASCADA */
         .main-container {
-            max-width: 1000px; /* Actualizado a 1000px para PC */
+            max-width: 1000px;
             margin: 0 auto;
             padding: 30px 25px 20px 25px;
             overflow: hidden; 
@@ -273,28 +273,42 @@
         .tab-contents-container { display: none; }
         .tab-contents-container.active { display: block; }
 
-        .slide-from-right > *:not(.feed-container),
-        .slide-from-left > *:not(.feed-container),
+        /* ANIMACIÓN ESCALONADA (CASCADA DE ARRIBA HACIA ABAJO) */
+        .slide-from-right > *,
+        .slide-from-left > *,
         .slide-from-right .feed-container > *,
         .slide-from-left .feed-container > * {
             opacity: 0;
-            animation-duration: 0.65s;
+            animation-duration: 0.6s;
             animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
             animation-fill-mode: both;
         }
 
-        .slide-from-right > *:not(.feed-container), .slide-from-right .feed-container > * { animation-name: waveInRight; }
-        .slide-from-left > *:not(.feed-container), .slide-from-left .feed-container > * { animation-name: waveInLeft; }
+        .slide-from-right > *, .slide-from-right .feed-container > * { animation-name: waveInRight; }
+        .slide-from-left > *, .slide-from-left .feed-container > * { animation-name: waveInLeft; }
 
         @keyframes waveInRight {
-            0% { opacity: 0; transform: translateX(120px); }
+            0% { opacity: 0; transform: translateX(100px); }
             100% { opacity: 1; transform: translateX(0); }
         }
 
         @keyframes waveInLeft {
-            0% { opacity: 0; transform: translateX(-120px); }
+            0% { opacity: 0; transform: translateX(-100px); }
             100% { opacity: 1; transform: translateX(0); }
         }
+
+        /* RETARDOS SECUENCIALES (CASCADA SEGÚN ORDEN VISUAL) */
+        .tab-contents-container.active > *:nth-child(1) { animation-delay: 0.05s; }
+        .tab-contents-container.active > *:nth-child(2) { animation-delay: 0.12s; }
+        .tab-contents-container.active > *:nth-child(3) { animation-delay: 0.19s; }
+        .tab-contents-container.active > *:nth-child(4) { animation-delay: 0.26s; }
+        .tab-contents-container.active > *:nth-child(5) { animation-delay: 0.33s; }
+        
+        /* Retardos para las tarjetas internas del feed */
+        .tab-contents-container.active .feed-container > *:nth-child(1) { animation-delay: 0.2s; }
+        .tab-contents-container.active .feed-container > *:nth-child(2) { animation-delay: 0.3s; }
+        .tab-contents-container.active .feed-container > *:nth-child(3) { animation-delay: 0.4s; }
+        .tab-contents-container.active .feed-container > *:nth-child(4) { animation-delay: 0.5s; }
 
         /* ESTILOS DE SECCIONES Y CARDS */
         .hero-section { margin-bottom: 25px; text-align: center; }
