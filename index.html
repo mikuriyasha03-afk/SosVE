@@ -274,7 +274,7 @@
             .mobile-nav-item.active .mobile-text { color: #ffffff; font-weight: 700; }
         }
 
-        /* CONTENEDOR Y ANIMACIONES WAVE EN CASCADA */
+        /* CONTENEDOR Y ANIMACIONES DE ENTRADA LENTA CON EFECTO DE OLA (2 SEGUNDOS) */
         .main-container {
             max-width: 1000px;
             margin: 0 auto;
@@ -286,7 +286,41 @@
         .tab-contents-container { display: none; }
         .tab-contents-container.active { display: block; }
 
-        /* ANIMACIÓN ESCALONADA (CASCADA DE ARRIBA HACIA ABAJO) */
+        /* Estado inicial oculto antes de que el splash desaparezca */
+        .tab-contents-container.active.pending-load > * {
+            opacity: 0;
+        }
+
+        /* Animación fluida de 2 segundos al activarse post-splash */
+        .tab-contents-container.active.initial-load > * {
+            opacity: 0;
+            animation: waveDropEffect 2.0s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes waveDropEffect {
+            0% {
+                opacity: 0;
+                transform: scale(0.8) translateY(-50px);
+            }
+            75% {
+                opacity: 1;
+                transform: scale(1.02) translateY(6px);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        /* Retardos escalonados para crear el EFECTO DE OLA fluido */
+        .tab-contents-container.active.initial-load > *:nth-child(1) { animation-delay: 0.1s; }
+        .tab-contents-container.active.initial-load > *:nth-child(2) { animation-delay: 0.25s; }
+        .tab-contents-container.active.initial-load > *:nth-child(3) { animation-delay: 0.4s; }
+        .tab-contents-container.active.initial-load > *:nth-child(4) { animation-delay: 0.55s; }
+        .tab-contents-container.active.initial-load > *:nth-child(5) { animation-delay: 0.7s; }
+        .tab-contents-container.active.initial-load > *:nth-child(n+6) { animation-delay: 0.85s; }
+
+        /* ANIMACIONES LATERALES PARA CAMBIO DE PESTAÑAS NORMALES */
         .slide-from-right > *,
         .slide-from-left > *,
         .slide-from-right .feed-container > *,
@@ -309,19 +343,6 @@
             0% { opacity: 0; transform: translateX(-100px); }
             100% { opacity: 1; transform: translateX(0); }
         }
-
-        /* RETARDOS SECUENCIALES (CASCADA SEGÚN ORDEN VISUAL) */
-        .tab-contents-container.active > *:nth-child(1) { animation-delay: 0.05s; }
-        .tab-contents-container.active > *:nth-child(2) { animation-delay: 0.12s; }
-        .tab-contents-container.active > *:nth-child(3) { animation-delay: 0.19s; }
-        .tab-contents-container.active > *:nth-child(4) { animation-delay: 0.26s; }
-        .tab-contents-container.active > *:nth-child(5) { animation-delay: 0.33s; }
-        
-        /* Retardos para las tarjetas internas del feed */
-        .tab-contents-container.active .feed-container > *:nth-child(1) { animation-delay: 0.2s; }
-        .tab-contents-container.active .feed-container > *:nth-child(2) { animation-delay: 0.3s; }
-        .tab-contents-container.active .feed-container > *:nth-child(3) { animation-delay: 0.4s; }
-        .tab-contents-container.active .feed-container > *:nth-child(4) { animation-delay: 0.5s; }
 
         /* ESTILOS DE SECCIONES Y CARDS */
         .hero-section { margin-bottom: 25px; text-align: center; }
@@ -402,7 +423,6 @@
         .card-title { font-size: 19px; font-weight: 700; margin: 0 0 6px 0; letter-spacing: -0.01em; }
         .card-description { font-size: 14px; opacity: 0.8; margin: 0 0 16px 0; line-height: 1.5; }
         
-        /* CONTENEDOR DE IMAGEN (ACTUALIZADO PARA PC SIN CORTES) */
         .card-img-container {
             width: 100%;
             border-radius: 12px;
@@ -417,7 +437,7 @@
             width: 100%; 
             height: auto; 
             max-height: 500px;
-            object-fit: contain; /* Evita que la imagen se corte en PC mostrando el 100% de la foto */
+            object-fit: contain; 
             display: block; 
             background: rgba(0,0,0,0.2);
         }
@@ -640,8 +660,8 @@
             <div id="lista-noticias" class="feed-container">Cargando noticias...</div>
         </div>
 
-        <!-- FEED GENERAL -->
-        <div id="contenido-feed" class="tab-contents-container active slide-from-right">
+        <!-- FEED GENERAL (INICIA ACTIVO CON ESPERA PENDING-LOAD) -->
+        <div id="contenido-feed" class="tab-contents-container active pending-load">
             <div class="hero-section"><h1 class="hero-title">Wondertech. <span>Tecnología y seguridad</span></h1></div>
             <div id="panel-personal-feed" class="admin-panel" style="display:none;">
                 <h3 style="margin-bottom: 14px; font-size:16px;">🛠️ Panel de Control</h3>
@@ -690,10 +710,99 @@
         const ordenCategorias = ['service', 'qr', 'noticias', 'feed'];
         let categoriaActualIndex = 3; 
 
+        // --- SISTEMA DE AUDIO SECO (TIPO CLICK DE INTERFAZ / MECÁNICO) ---
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        // 1. Sonido de clic seco (para botones)
+        function reproducirSonidoClick() {
+            try {
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                
+                const bufferSize = audioCtx.sampleRate * 0.025; // 25 milisegundos
+                const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    data[i] = Math.random() * 2 - 1;
+                }
+
+                const noise = audioCtx.createBufferSource();
+                noise.buffer = buffer;
+
+                const filter = audioCtx.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.value = 800; // Corte bajo para sonido plano/seco
+
+                const gain = audioCtx.createGain();
+                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.025);
+
+                noise.connect(filter);
+                filter.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                noise.start();
+            } catch(e) { }
+        }
+
+        // 2. Sonido de transición seco y sutil (para cambio de categorías)
+        function reproducirSonidoTransicion() {
+            try {
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(120, audioCtx.currentTime);
+                osc.frequency.setValueAtTime(80, audioCtx.currentTime + 0.03);
+
+                gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.04);
+
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.04);
+            } catch(e) { }
+        }
+
+        // 3. Sonido de entrada seco (al abrir la app / quitar splash)
+        function reproducirSonidoEntrada() {
+            try {
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                
+                const now = audioCtx.currentTime;
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(200, now);
+                osc.frequency.setValueAtTime(150, now + 0.06);
+
+                gain.gain.setValueAtTime(0.08, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                osc.start(now);
+                osc.stop(now + 0.06);
+            } catch(e) { }
+        }
+
         function ocultarSplashForzado() {
             const splash = document.getElementById('splash-screen');
             if (splash && !splash.classList.contains('splash-fade-out')) {
                 splash.classList.add('splash-fade-out');
+                reproducirSonidoEntrada();
+
+                // DISPARA LA ANIMACIÓN EXACTAMENTE AL QUITAR EL SPLASH
+                const contenidoInicial = document.getElementById('contenido-feed');
+                if (contenidoInicial) {
+                    contenidoInicial.classList.remove('pending-load');
+                    contenidoInicial.classList.add('initial-load');
+                }
             }
         }
         setTimeout(ocultarSplashForzado, 1200);
@@ -810,8 +919,8 @@
                                     <div class="product-price-badge">${item.contacto || 'Consultar'}</div>
                                     
                                     <div class="${claseAdminActions}">
-                                        <button class="glass-button secondary" style="flex:1; padding: 6px;" onclick="cargarDatosEdicion('${item.id}', '${item.categoria}')">✏️ Editar</button>
-                                        <button class="glass-button danger" style="flex:1; padding: 6px;" onclick="eliminarPublicacion('${item.id}')">🗑️ Eliminar</button>
+                                        <button class="glass-button secondary" style="flex:1; padding: 6px;" onclick="reproducirSonidoClick(); cargarDatosEdicion('${item.id}', '${item.categoria}')">✏️ Editar</button>
+                                        <button class="glass-button danger" style="flex:1; padding: 6px;" onclick="reproducirSonidoClick(); eliminarPublicacion('${item.id}')">🗑️ Eliminar</button>
                                     </div>
                                 </div>
                                 <p class="card-tip">Wondertech Technologies • Calidad Garantizada</p>
@@ -833,6 +942,8 @@
             const direccion = nuevoIndex > categoriaActualIndex ? 'slide-from-right' : 'slide-from-left';
             categoriaActualIndex = nuevoIndex;
 
+            reproducirSonidoTransicion();
+
             document.querySelectorAll('.store-category-item').forEach(b => b.classList.remove('active'));
             document.getElementById(`tab-${destino}-btn`)?.classList.add('active');
 
@@ -840,7 +951,7 @@
             document.getElementById(`m-tab-${destino}-btn`)?.classList.add('active');
 
             document.querySelectorAll('.tab-contents-container').forEach(c => {
-                c.classList.remove('active', 'slide-from-right', 'slide-from-left');
+                c.classList.remove('active', 'slide-from-right', 'slide-from-left', 'initial-load', 'pending-load');
             });
 
             const contenidoSeleccionado = document.getElementById(`contenido-${destino}`);
@@ -851,6 +962,7 @@
         }
 
         function abrirFormularioActivo(cat) { 
+            reproducirSonidoClick();
             document.getElementById(`form-id-${cat}`).value = "";
             document.getElementById(`form-nombre-${cat}`).value = "";
             document.getElementById(`form-detalles-${cat}`).value = "";
@@ -892,6 +1004,7 @@
         }
 
         async function guardarPublicacion(cat) {
+            reproducirSonidoClick();
             const id = document.getElementById(`form-id-${cat}`).value;
             const nombre = document.getElementById(`form-nombre-${cat}`).value;
             const detalles = document.getElementById(`form-detalles-${cat}`).value;
@@ -980,7 +1093,7 @@
                     method: 'DELETE',
                     headers: {
                         "apikey": SUPABASE_KEY,
-                        "Authorization": `Bearer ${tokenAdmin || SUPABASE_KEY}`
+                    "Authorization": `Bearer ${tokenAdmin || SUPABASE_KEY}`
                     }
                 });
 
@@ -994,8 +1107,14 @@
             }
         }
 
-        function abrirModalLogin() { document.getElementById('modal-login').style.display = 'block'; }
-        function cerrarModalLogin() { document.getElementById('modal-login').style.display = 'none'; }
+        function abrirModalLogin() { 
+            reproducirSonidoClick();
+            document.getElementById('modal-login').style.display = 'block'; 
+        }
+        function cerrarModalLogin() { 
+            reproducirSonidoClick();
+            document.getElementById('modal-login').style.display = 'none'; 
+        }
         
         function mostrarNombreArchivo(input, previewId, labelTxtId) { 
             if(input.files.length > 0) {
@@ -1005,6 +1124,7 @@
         }
         
         async function iniciarSesion() {
+            reproducirSonidoClick();
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
 
@@ -1045,6 +1165,7 @@
         }
 
         async function cerrarSesion() { 
+            reproducirSonidoClick();
             usuarioLogueado = null;
             tokenAdmin = null;
             document.querySelectorAll('.admin-panel').forEach(panel => panel.style.display = 'none');
