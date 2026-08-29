@@ -316,7 +316,6 @@
         .tab-contents-container { display: none; }
         .tab-contents-container.active { display: block; }
         
-        /* EFECTO DE OLA Y DESPLAZAMIENTO HORIZONTAL PURO Y NOTORIO */
         .tab-contents-container.active.slide-from-right > * {
             opacity: 0;
             transform: translateX(120px);
@@ -449,24 +448,42 @@
             background: rgba(0,0,0,0.2);
         }
 
-        .product-price-badge {
-            background: rgba(52, 211, 153, 0.15);
-            border: 1px solid rgba(52, 211, 153, 0.4);
-            color: #34d399;
-            padding: 8px 14px;
+        /* Estilo destacado para el botón de Añadir al Carrito en el lugar principal */
+        .product-action-badge {
+            background: rgba(52, 211, 153, 0.25);
+            border: 1px solid rgba(52, 211, 153, 0.6);
+            color: #ffffff;
+            padding: 10px 16px;
             border-radius: 980px;
             text-align: center;
             width: 100%;
-            display: block;
-            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 13.5px;
+            font-weight: 700;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(52, 211, 153, 0.2);
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            -webkit-tap-highlight-color: transparent;
+            margin-bottom: 8px;
         }
 
-        .admin-actions {
-            display: flex;
-            gap: 8px;
-            margin-top: 12px;
-            padding-top: 10px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        .product-action-badge:hover, .product-action-badge:active {
+            background: rgba(52, 211, 153, 0.4);
+            border-color: rgba(52, 211, 153, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(52, 211, 153, 0.35);
+        }
+
+        /* Precio mostrado de forma secundaria debajo del botón */
+        .product-secondary-price {
+            text-align: center;
+            padding: 4px 0;
+            font-size: 12px;
+            color: #a1a1a6;
         }
 
         .card-tip { font-size: 11px; text-align: center; color: #94a3b8; margin: 10px 0 0 0; }
@@ -635,12 +652,10 @@
         </div>
     </div>
 
-    <!-- MODAL DE CARRITO Y PAGO MÓVIL INTEGRADO -->
     <div id="modal-carrito" class="modal">
         <div class="modal-content" style="max-width: 440px;">
             <span class="close-modal" onclick="cerrarModalCarrito()">&times;</span>
             
-            <!-- VISTA 1: LISTA DEL CARRITO -->
             <div id="cartView">
                 <h4 style="text-align:center; margin-bottom:14px; font-size:15px;">🛒 Tu Carrito de Compras</h4>
                 <div id="contenido-carrito-items" style="max-height: 250px; overflow-y: auto; margin-bottom: 12px; font-size: 12px;">
@@ -656,7 +671,6 @@
                 <button class="glass-button full-width" onclick="irAlCheckout()">Proceder al Pago Móvil</button>
             </div>
 
-            <!-- VISTA 2: FORMULARIO DE PAGO MÓVIL -->
             <div id="checkoutView" style="display: none;">
                 <h4 style="text-align:center; margin-bottom:10px; font-size:15px;">💳 Reportar Pago Móvil</h4>
                 
@@ -695,7 +709,6 @@
                         <input type="text" id="referenceNumber" required placeholder="Últimos 4 dígitos o Referencia">
                     </div>
                     
-                    <!-- MONTO AUTOMÁTICO E INALTERABLE PARA EVITAR ESTAFAS -->
                     <div class="input-group">
                         <label style="font-size:11px; color:#34d399; display:block; margin-bottom:4px;">MONTO EXACTO A PAGAR (AUTOMÁTICO)</label>
                         <input type="text" id="amount" readonly style="font-weight:bold; color:#34d399; background: rgba(52, 211, 153, 0.08); border-color: rgba(52, 211, 153, 0.4);">
@@ -711,7 +724,6 @@
         </div>
     </div>
 
-    <!-- MODAL DE HISTORIAL DE COMPRAS -->
     <div id="modal-historial" class="modal">
         <div class="modal-content" style="max-width: 440px;">
             <span class="close-modal" onclick="cerrarModalHistorial()">&times;</span>
@@ -986,11 +998,11 @@
         }
 
         function formatearPrecioDual(textoContacto) {
-            if (!textoContacto) return '<span style="color:#34d399; font-weight:700; font-size:14px;">Consultar</span>';
+            if (!textoContacto) return '<span style="color:#34d399; font-weight:600;">Consultar</span>';
             
             let match = textoContacto.replace(/,/g, '').match(/[\d.]+/);
             if (!match || globalTasaBCV <= 0) {
-                return `<span style="color:#34d399; font-weight:700; font-size:14px;">${textoContacto}</span>`;
+                return `Precio: ${textoContacto}`;
             }
 
             let precioUSD = parseFloat(match[0]);
@@ -999,14 +1011,7 @@
             let formatVES = precioVES.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
             let formatUSD = precioUSD.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-            return `
-                <div style="font-size: 15px; font-weight: 700; color: #ffffff;">
-                    Bs. ${formatVES}
-                </div>
-                <div style="font-size: 11px; color: #a1a1a6; margin-top: 1px;">
-                    ($${formatUSD} USD)
-                </div>
-            `;
+            return `Precio: Bs. ${formatVES} ($${formatUSD} USD)`;
         }
 
         function renderizarTodo() {
@@ -1034,10 +1039,10 @@
                                     <h3 class="card-title">${item.nombre}</h3>
                                     <p class="card-description">${item.detalles}</p>
                                     ${imgBlock}
-                                    <div class="product-price-badge">${precioHtml}</div>
-                                    <div class="admin-actions">
-                                        <button class="glass-button full-width" style="padding: 6px;" onclick="agregarAlCarrito('${item.id}')">🛒 Añadir al Carrito</button>
+                                    <div class="product-action-badge" onclick="agregarAlCarrito('${item.id}')">
+                                        🛒 Añadir al Carrito
                                     </div>
+                                    <div class="product-secondary-price">${precioHtml}</div>
                                 </div>
                                 <p class="card-tip">Wondertech Technologies • Calidad Garantizada</p>
                             </div>
