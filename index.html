@@ -315,15 +315,41 @@
 
         .tab-contents-container { display: none; }
         .tab-contents-container.active { display: block; }
-        .tab-contents-container.active.pending-load > * { opacity: 0; }
+        
+        /* EFECTO DE OLA Y DESPLAZAMIENTO HORIZONTAL PURO Y NOTORIO */
+        .tab-contents-container.active.slide-from-right > * {
+            opacity: 0;
+            transform: translateX(120px);
+            animation: slideWaveRight 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation-delay: var(--stagger-delay, 0s);
+        }
+
+        .tab-contents-container.active.slide-from-left > * {
+            opacity: 0;
+            transform: translateX(-120px);
+            animation: slideWaveLeft 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation-delay: var(--stagger-delay, 0s);
+        }
+
         .tab-contents-container.active.initial-load > * {
             opacity: 0;
-            animation: cleanFadeWave 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation: cleanFadeWave 1.0s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation-delay: var(--stagger-delay, 0s);
+        }
+
+        @keyframes slideWaveRight {
+            0% { opacity: 0; transform: translateX(120px); }
+            100% { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes slideWaveLeft {
+            0% { opacity: 0; transform: translateX(-120px); }
+            100% { opacity: 1; transform: translateX(0); }
         }
 
         @keyframes cleanFadeWave {
-            0% { opacity: 0; transform: translateY(20px) scale(0.98); }
-            100% { opacity: 1; transform: translateY(0) scale(1); }
+            0% { opacity: 0; transform: translateY(15px); }
+            100% { opacity: 1; transform: translateY(0); }
         }
 
         .hero-section { margin-bottom: 20px; text-align: center; }
@@ -575,7 +601,7 @@
             <div id="lista-noticias" class="feed-container">Cargando noticias...</div>
         </div>
 
-        <div id="contenido-feed" class="tab-contents-container active pending-load">
+        <div id="contenido-feed" class="tab-contents-container active initial-load">
             <div class="hero-section"><h1 class="hero-title">Wondertech. <span>Tecnología y seguridad</span></h1></div>
             <h2 class="section-header-title" style="margin-bottom: 16px;">Lo último. Novedades.</h2>
             <div id="lista-feed" class="feed-container">Cargando catálogo...</div>
@@ -803,8 +829,8 @@
                 reproducirSonidoEntrada();
                 const contenidoInicial = document.getElementById('contenido-feed');
                 if (contenidoInicial) {
-                    contenidoInicial.classList.remove('pending-load');
                     contenidoInicial.classList.add('initial-load');
+                    aplicarEfectoOla(contenidoInicial);
                 }
             }
         }
@@ -1025,6 +1051,14 @@
             renderizarCards('lista-noticias', cacheReportes.filter(r => ['noticias', 'noticia'].includes(r.categoria?.toLowerCase().trim())));
         }
 
+        function aplicarEfectoOla(contenedorSeccion) {
+            const elementosHijos = contenedorSeccion.querySelectorAll('.hero-section, .section-top-bar, .search-input, .glass-card');
+            elementosHijos.forEach((el, index) => {
+                const delay = (index * 0.08) + 's';
+                el.style.setProperty('--stagger-delay', delay);
+            });
+        }
+
         function cambiarPestana(destino) {
             const nuevoIndex = ordenCategorias.indexOf(destino);
             if (nuevoIndex === -1) return;
@@ -1041,13 +1075,14 @@
             document.getElementById(`m-tab-${destino}-btn`)?.classList.add('active');
 
             document.querySelectorAll('.tab-contents-container').forEach(c => {
-                c.classList.remove('active', 'slide-from-right', 'slide-from-left', 'initial-load', 'pending-load');
+                c.classList.remove('active', 'slide-from-right', 'slide-from-left', 'initial-load');
             });
 
             const contenidoSeleccionado = document.getElementById(`contenido-${destino}`);
             if (contenidoSeleccionado) {
                 void contenidoSeleccionado.offsetWidth; 
                 contenidoSeleccionado.classList.add('active', direccion);
+                aplicarEfectoOla(contenidoSeleccionado);
             }
         }
 
@@ -1156,7 +1191,6 @@
                 document.getElementById('info-tasa-bcv').innerText = `Tasa BCV: Bs. ${globalTasaBCV.toLocaleString('es-VE', {minimumFractionDigits: 2})}`;
                 document.getElementById('pago-movil-equivalente').innerText = `Bs. ${totalVES.toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
                 
-                // Asignar monto exacto de forma inalterable para evitar estafas
                 document.getElementById('amount').value = totalVES.toFixed(2);
             } else {
                 document.getElementById('info-tasa-bcv').innerText = `Tasa BCV: No disponible`;
@@ -1225,7 +1259,6 @@
                 msgElement.style.color = '#34d399';
                 msgElement.textContent = `¡Reporte enviado! Orden: ${invoice_number}`;
                 
-                // Limpiar carrito tras el reporte exitoso
                 carrito = [];
 
                 setTimeout(() => {
@@ -1261,7 +1294,6 @@
             document.getElementById('modal-historial').style.display = 'block';
 
             try {
-                // Consultar las órdenes registradas en Supabase
                 const response = await fetch(`${SUPABASE_URL}/rest/v1/order_payments?select=*&order=created_at.desc`, {
                     headers: {
                         "apikey": SUPABASE_KEY,
