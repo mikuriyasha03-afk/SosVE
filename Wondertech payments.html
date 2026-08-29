@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Wondertech - Control de Pagos</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        
+        #splash-screen {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: #0b0f19; z-index: 9999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            opacity: 1; visibility: visible; transition: opacity 0.4s ease, visibility 0.4s ease;
+        }
+        .splash-logo {
+            width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 12px;
+            border: 2px solid rgba(52, 211, 153, 0.5); box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            background: rgba(255,255,255,0.05);
+        }
+        .splash-title { font-size: 16px; font-weight: 600; color: #ffffff; font-family: sans-serif; }
+        .splash-fade-out { opacity: 0 !important; visibility: hidden !important; }
+
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: #f5f5f7; background: #07090e;
+            min-height: 100vh; padding-top: 55px; padding-bottom: 110px; overflow-x: hidden;
+            font-size: 13.5px;
+        }
+
+        .app-header {
+            background: rgba(11, 15, 25, 0.85); backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px); border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            position: fixed; top: 0; left: 0; width: 100%; height: 55px; z-index: 100;
+            display: flex; align-items: center; justify-content: space-between; padding: 0 16px;
+        }
+        .header-brand { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 14.5px; color: #fff; }
+        .header-brand img { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(52, 211, 153, 0.4); }
+        .header-actions { display: flex; gap: 8px; align-items: center; }
+
+        .app-container { max-width: 500px; margin: 0 auto; padding: 14px; }
+
+        .wave-anim {
+            opacity: 0; transform: translateY(30px) scale(0.97);
+            animation: waveEntrance 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation-delay: var(--wave-delay);
+        }
+
+        @keyframes waveEntrance {
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+        .stat-card {
+            background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px; padding: 12px 14px;
+        }
+        .stat-label { font-size: 10px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+        .stat-value { font-size: 17px; font-weight: 700; color: #34d399; }
+
+        .search-input {
+            width: 100%; padding: 10px 14px; background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; color: #fff; font-size: 13px; outline: none; margin-bottom: 14px;
+        }
+        .search-input:focus { border-color: #34d399; }
+
+        #lista-pagos { display: flex; flex-direction: column; gap: 10px; }
+
+        .payment-card {
+            background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px; padding: 14px; display: flex; flex-direction: column; gap: 8px;
+        }
+
+        .payment-header { display: flex; justify-content: space-between; align-items: center; }
+        .client-name { font-weight: 600; font-size: 13.5px; color: #fff; }
+        .invoice-tag { font-size: 10px; background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 4px; color: #94a3b8; }
+        
+        .payment-details { display: flex; flex-direction: column; gap: 4px; font-size: 11.5px; color: #94a3b8; background: rgba(0,0,0,0.25); padding: 8px 10px; border-radius: 10px; }
+        .payment-details strong { color: #e2e8f0; }
+
+        .purchase-items {
+            border-top: 1px dashed rgba(255,255,255,0.1);
+            margin-top: 4px; padding-top: 6px;
+            font-size: 11px; color: #cbd5e1;
+        }
+        .purchase-items span { display: block; color: #94a3b8; font-size: 10px; margin-bottom: 2px; text-transform: uppercase; }
+
+        .payment-actions { display: flex; gap: 6px; justify-content: flex-end; margin-top: 2px; flex-wrap: wrap; }
+
+        .app-btn {
+            background: rgba(52, 211, 153, 0.12); border: 1px solid rgba(52, 211, 153, 0.35); color: #34d399;
+            padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 600; cursor: pointer;
+        }
+        .app-btn.danger { background: rgba(239, 68, 68, 0.12); border-color: rgba(239, 68, 68, 0.35); color: #fca5a5; }
+        .app-btn.delete-mode-btn { background: rgba(239, 68, 68, 0.2); border-color: rgba(239, 68, 68, 0.5); color: #f87171; }
+        .app-btn.delete-mode-btn.active { background: rgba(239, 68, 68, 0.5); color: #fff; border-color: #ef4444; box-shadow: 0 0 10px rgba(239, 68, 68, 0.5); }
+
+        .badge-status { padding: 2px 6px; border-radius: 6px; font-size: 9.5px; font-weight: 600; text-transform: uppercase; }
+        .badge-pending { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+        .badge-approved { background: rgba(52, 211, 153, 0.15); color: #34d399; }
+        .badge-rejected { background: rgba(239, 68, 68, 0.15); color: #fca5a5; }
+
+        .floating-nav-container {
+            position: fixed; bottom: 16px; left: 0; width: 100%; display: flex; justify-content: center; z-index: 100; pointer-events: none; padding: 0 10px;
+        }
+        .floating-nav {
+            pointer-events: auto; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.12);
+            display: flex; gap: 4px; padding: 6px; border-radius: 99px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            overflow-x: auto; max-width: 100%; scroll-behavior: smooth; -webkit-overflow-scrolling: touch;
+        }
+        .floating-nav::-webkit-scrollbar { display: none; }
+        
+        .float-nav-btn {
+            background: transparent; border: none; color: #94a3b8; padding: 8px 16px; border-radius: 99px;
+            font-size: 11.5px; font-weight: 500; cursor: pointer; white-space: nowrap; transition: all 0.25s ease;
+        }
+        .float-nav-btn.active { background: rgba(52, 211, 153, 0.2); color: #34d399; font-weight: 600; border: 1px solid rgba(52, 211, 153, 0.4); transform: scale(1.03); }
+
+        .empty-state { text-align: center; padding: 40px; color: #64748b; font-size: 13px; }
+    </style>
+</head>
+<body>
+
+    <div id="splash-screen">
+        <img id="logo-splash" class="splash-logo" alt="Logo">
+        <div class="splash-title">Wondertech Payments</div>
+    </div>
+
+    <header class="app-header">
+        <div class="header-brand">
+            <img id="logo-header" alt="Logo">
+            <span>Panel de Pagos</span>
+        </div>
+        <div class="header-actions">
+            <button id="btnToggleDelete" class="app-btn delete-mode-btn" onclick="toggleModoEliminar()" title="Modo Eliminar">🗑️ Modo Borrar</button>
+            <button class="app-btn" onclick="cargarPagos()">🔄</button>
+        </div>
+    </header>
+
+    <main class="app-container">
+        <div id="statsContainer" class="stats-grid wave-anim" style="--wave-delay: 0.02s;">
+            <div class="stat-card">
+                <div class="stat-label">Total Aprobado (Bs)</div>
+                <div class="stat-value" id="stat-total">Bs. 0.00</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Pendientes</div>
+                <div class="stat-value" id="stat-pendientes" style="color: #fbbf24;">0</div>
+            </div>
+        </div>
+
+        <input type="text" id="searchInput" class="search-input wave-anim" style="--wave-delay: 0.05s;" placeholder="🔍 Buscar cliente, ref o producto..." oninput="filtrarPagos()">
+
+        <div id="lista-pagos">
+            <div class="empty-state">Cargando registros...</div>
+        </div>
+    </main>
+
+    <div class="floating-nav-container">
+        <nav class="floating-nav" id="floatingNav">
+            <button class="float-nav-btn active" onclick="cambiarFiltro('todos', this)">📋 Todos</button>
+            <button class="float-nav-btn" onclick="cambiarFiltro('pendiente', this)">⏳ Pendientes</button>
+            <button class="float-nav-btn" onclick="cambiarFiltro('aprobado', this)">✅ Aprobados</button>
+            <button class="float-nav-btn" onclick="cambiarFiltro('rechazado', this)">❌ Rechazados</button>
+        </nav>
+    </div>
+
+    <script>
+        const SUPABASE_URL = "https://eiespojygliahqtjkkyd.supabase.co"; 
+        const SUPABASE_KEY = "sb_publishable_TlydS60DSu5pDs6i9LwIPQ_zl00u_mR";
+        const LOGO_URL = `${SUPABASE_URL}/storage/v1/object/public/fotos-reportes/logo_principal.png`;
+
+        let listaGlobalPagos = [];
+        let filtroActual = 'todos';
+        let modoEliminarActivo = false;
+
+        const imgPreload = new Image();
+        imgPreload.src = LOGO_URL;
+        imgPreload.onload = () => {
+            document.getElementById('logo-splash').src = LOGO_URL;
+            document.getElementById('logo-header').src = LOGO_URL;
+        };
+
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function reproducirSonidoClick() {
+            try {
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                const bufferSize = audioCtx.sampleRate * 0.03;
+                const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize);
+                const noise = audioCtx.createBufferSource();
+                noise.buffer = buffer;
+                const filter = audioCtx.createBiquadFilter();
+                filter.type = 'bandpass'; filter.frequency.value = 550;
+                const gain = audioCtx.createGain();
+                gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.03);
+                noise.connect(filter); filter.connect(gain); gain.connect(audioCtx.destination);
+                noise.start();
+            } catch(e){}
+        }
+
+        window.onload = async () => {
+            await cargarPagos();
+            setTimeout(() => {
+                const splash = document.getElementById('splash-screen');
+                if (splash) splash.classList.add('splash-fade-out');
+            }, 600);
+        };
+
+        async function cargarPagos() {
+            reproducirSonidoClick();
+            try {
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/order_payments?select=*&order=created_at.desc`, {
+                    headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}` }
+                });
+                if(!res.ok) throw new Error();
+                listaGlobalPagos = (await res.json()).map(p => ({ ...p, status: p.status || 'pendiente' }));
+                actualizarEstadisticas();
+                filtrarPagos();
+            } catch(e) {
+                document.getElementById('lista-pagos').innerHTML = `<div class="empty-state" style="color:#f87171;">Error al sincronizar datos.</div>`;
+            }
+        }
+
+        function actualizarEstadisticas() {
+            let totalMonto = 0, pendientesCount = 0;
+            listaGlobalPagos.forEach(p => {
+                if (p.status === 'aprobado') totalMonto += parseFloat(p.amount) || 0;
+                if (p.status === 'pendiente') pendientesCount++;
+            });
+            document.getElementById('stat-total').innerText = `Bs. ${totalMonto.toLocaleString('es-VE', {minimumFractionDigits: 2})}`;
+            document.getElementById('stat-pendientes').innerText = pendientesCount;
+        }
+
+        function cambiarFiltro(tipo, btn) {
+            reproducirSonidoClick();
+            filtroActual = tipo;
+            document.querySelectorAll('.float-nav-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            const nav = document.getElementById('floatingNav');
+            const scrollLeftTarget = btn.offsetLeft - (nav.clientWidth / 2) + (btn.clientWidth / 2);
+            nav.scrollTo({ left: scrollLeftTarget, behavior: 'smooth' });
+
+            filtrarPagos();
+        }
+
+        function toggleModoEliminar() {
+            reproducirSonidoClick();
+            modoEliminarActivo = !modoEliminarActivo;
+            const btn = document.getElementById('btnToggleDelete');
+            if (modoEliminarActivo) {
+                btn.classList.add('active');
+                btn.innerText = '🗑️ Desactivar Borrado';
+            } else {
+                btn.classList.remove('active');
+                btn.innerText = '🗑️ Modo Borrar';
+            }
+            filtrarPagos();
+        }
+
+        function filtrarPagos() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const filtrados = listaGlobalPagos.filter(p => {
+                const matchTexto = (p.customer_name?.toLowerCase() || '').includes(query) ||
+                                   (p.reference_number?.toLowerCase() || '').includes(query) ||
+                                   (p.items_detail?.toLowerCase() || '').includes(query);
+                if (filtroActual === 'todos') return matchTexto;
+                return matchTexto && p.status === filtroActual;
+            });
+            renderizarPagos(filtrados);
+        }
+
+        function renderizarPagos(pagos) {
+            const container = document.getElementById('lista-pagos');
+            if (!pagos.length) {
+                container.innerHTML = `<div class="empty-state wave-anim" style="--wave-delay: 0.08s;">No hay registros que mostrar.</div>`;
+                return;
+            }
+
+            container.innerHTML = "";
+            pagos.forEach((p, index) => {
+                let badgeClass = 'badge-pending';
+                if (p.status === 'aprobado') badgeClass = 'badge-approved';
+                if (p.status === 'rechazado') badgeClass = 'badge-rejected';
+
+                const delay = Math.min(0.08 + (index * 0.025), 0.35) + 's';
+
+                const montoBs = parseFloat(p.amount) || 0;
+                const tasaDia = parseFloat(p.exchange_rate) || 0;
+                let equivalenteUsd = tasaDia > 0 ? (montoBs / tasaDia).toFixed(2) : (p.amount_usd ? parseFloat(p.amount_usd).toFixed(2) : '---');
+                let infoTasaTexto = tasaDia > 0 ? `Tasa BCV/Día: <strong>Bs. ${tasaDia.toFixed(2)}</strong>` : `Tasa del día no especificada`;
+
+                const card = document.createElement('div');
+                card.className = 'payment-card wave-anim';
+                card.style.setProperty('--wave-delay', delay);
+
+                let botonEliminarHTML = '';
+                if (modoEliminarActivo) {
+                    botonEliminarHTML = `<button class="app-btn danger" onclick="eliminarPagoSupabase('${p.id}')">🗑️ Eliminar Definitivamente</button>`;
+                }
+
+                card.innerHTML = `
+                    <div class="payment-header">
+                        <div>
+                            <span class="invoice-tag">${p.invoice_number || 'S/N'}</span>
+                            <div class="client-name" style="margin-top:2px;">👤 ${p.customer_name || 'Sin Nombre'}</div>
+                        </div>
+                        <span class="badge-status ${badgeClass}">${p.status}</span>
+                    </div>
+
+                    <div class="payment-details">
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>Ref: <strong>${p.reference_number || 'N/A'}</strong></span>
+                            <span>Monto Pagado: <strong style="color:#34d399;">Bs. ${montoBs.toFixed(2)}</strong></span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-top: 2px;">
+                            <span>${infoTasaTexto}</span>
+                            <span>Equivalente: <strong style="color:#38bdf8;">$${equivalenteUsd} USD</strong></span>
+                        </div>
+                        
+                        <div class="purchase-items">
+                            <span>🛍️ Artículos / Compras de la Orden:</span>
+                            <div>${p.items_detail || p.description || 'Detalle de compra genérico o no especificado.'}</div>
+                        </div>
+                    </div>
+
+                    <div class="payment-actions">
+                        ${p.status !== 'aprobado' ? `<button class="app-btn" onclick="cambiarEstadoPago('${p.id}', 'aprobado')">✔️ Aprobar</button>` : ''}
+                        ${p.status !== 'rechazado' ? `<button class="app-btn danger" onclick="cambiarEstadoPago('${p.id}', 'rechazado')">❌ Rechazar</button>` : ''}
+                        ${botonEliminarHTML}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        async function cambiarEstadoPago(id, nuevoEstado) {
+            reproducirSonidoClick();
+            try {
+                await fetch(`${SUPABASE_URL}/rest/v1/order_payments?id=eq.${id}`, {
+                    method: 'PATCH',
+                    headers: {
+                        "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`,
+                        "Content-Type": "application/json", "Prefer": "return=minimal"
+                    },
+                    body: JSON.stringify({ status: nuevoEstado })
+                });
+                const p = listaGlobalPagos.find(item => item.id == id);
+                if(p) p.status = nuevoEstado;
+                actualizarEstadisticas();
+                filtrarPagos();
+            } catch(e) {
+                alert("Error al actualizar");
+            }
+        }
+
+        async function eliminarPagoSupabase(id) {
+            if (!confirm("⚠️ ¿Deseas eliminar este registro de la base de datos de Supabase permanentemente?")) return;
+            reproducirSonidoClick();
+            try {
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/order_payments?id=eq.${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        "apikey": SUPABASE_KEY,
+                        "Authorization": `Bearer ${SUPABASE_KEY}`,
+                        "Content-Type": "application/json",
+                        "Prefer": "return=representation"
+                    }
+                });
+
+                if (!res.ok) {
+                    const errorData = await res.json();
+                    alert(`Error de Supabase (${res.status}): ${errorData.message || 'No tienes permisos RLS habilitados'}`);
+                    return;
+                }
+
+                // Si la eliminación en la nube fue exitosa, actualiza la UI
+                listaGlobalPagos = listaGlobalPagos.filter(item => item.id != id);
+                actualizarEstadisticas();
+                filtrarPagos();
+            } catch (e) {
+                alert("Error de conexión al intentar eliminar el registro.");
+            }
+        }
+    </script>
+</body>
+</html>
